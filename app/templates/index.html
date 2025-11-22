@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - BarberBook{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4">Reserva tu cita con los mejores barberos</h1>
+        <p class="lead mb-4">Encuentra tu barbería favorita y agenda tu próximo corte en segundos</p>
+        {% if not is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg me-2">
+                <i class="bi bi-person-plus"></i> Crear Cuenta
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <div class="row text-center mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="p-4">
+                <i class="bi bi-calendar-check display-1 text-primary mb-3"></i>
+                <h4>Reserva Fácil</h4>
+                <p class="text-muted">Elige tu barbero y horario favorito en pocos clics</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="p-4">
+                <i class="bi bi-clock-history display-1 text-primary mb-3"></i>
+                <h4>Ahorra Tiempo</h4>
+                <p class="text-muted">Olvídate de las esperas, llega directo a tu cita</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="p-4">
+                <i class="bi bi-star-fill display-1 text-primary mb-3"></i>
+                <h4>Calidad Garantizada</h4>
+                <p class="text-muted">Barberos profesionales con años de experiencia</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Barberías Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-5">Nuestras Barberías</h2>
+    
+    {% if barberias %}
+        <div class="row">
+            {% for barberia in barberias %}
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-shop text-primary"></i> {{ barberia.nombre }}
+                            </h5>
+                            <p class="card-text text-muted mb-2">
+                                <i class="bi bi-geo-alt"></i> {{ barberia.direccion }}, {{ barberia.ciudad }}
+                            </p>
+                            <p class="card-text mb-2">
+                                <i class="bi bi-telephone"></i> {{ barberia.telefono }}
+                            </p>
+                            <p class="card-text mb-3">
+                                <i class="bi bi-clock"></i> 
+                                {{ barberia.hora_apertura.strftime('%I:%M %p') }} - {{ barberia.hora_cierre.strftime('%I:%M %p') }}
+                            </p>
+                            {% if barberia.descripcion %}
+                                <p class="card-text small">{{ barberia.descripcion }}</p>
+                            {% endif %}
+                            <a href="{{ url_for('main.ver_barberia', barberia_id=barberia.id) }}" class="btn btn-primary">
+                                <i class="bi bi-eye"></i> Ver Detalles
+                            </a>
+                            {% if is_authenticated %}
+                                <a href="{{ url_for('cliente.reservar', barberia_id=barberia.id) }}" class="btn btn-success">
+                                    <i class="bi bi-calendar-plus"></i> Reservar
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> No hay barberías disponibles en este momento.
+        </div>
+    {% endif %}
+</div>
+
+<!-- CTA Section -->
+{% if not is_authenticated %}
+<div class="bg-light py-5 mt-5">
+    <div class="container text-center">
+        <h3 class="mb-3">¿Listo para tu próximo corte?</h3>
+        <p class="lead mb-4">Únete a miles de clientes que ya disfrutan de nuestro servicio</p>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-person-plus"></i> Crear Cuenta Gratis
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
