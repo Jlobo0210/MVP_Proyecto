@@ -1,15 +1,10 @@
 from flask import Flask, render_template, jsonify, request
-import plotly
 import pyodbc
-from os import getenv
 import pandas as pd
-import plotly.express as px
-import plotly.io as pio
+from os import getenv
 import json
 import urllib.request
-import numpy as np
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
+
 
 app = Flask(__name__)
 
