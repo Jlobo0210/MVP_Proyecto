@@ -1,18 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
-/* ============================================
-   VARIABLES CSS - Tema Barbería
-   ============================================ */
-
-/* --------------- INICIO PARTE BASES------------------ */
 :root {
-    /* Colores principales */
-    --color-main: #1a202e;
-    --primary-dark: #1a1a1a;
-    --primary-gold: #d4af37;
-    --primary-red: #c41e3a;
-    --accent-blue: #2c5f7e;
+    --primary-dark: #1a1a1a;        /* Negro profundo */
+    --primary-gold: #d4af37;        /* Dorado clásico barbería */
+    --primary-red: #c41e3a;         /* Rojo barbería */
+    --accent-blue: #2c5f7e;         /* Azul profundo */
     
     /* Grises */
     --gray-50: #f9fafb;
@@ -35,8 +27,9 @@
 }
 
 /* ============================================
-   RESET Y ESTILOS BASE
-   ============================================ */
+    ESTILOS DE BASE
+    ============================================ */
+
 * {
     font-family: 'Poppins', sans-serif;
     box-sizing: border-box;
@@ -54,9 +47,9 @@ body {
     background-color: var(--gray-50);
     color: var(--gray-800);
     line-height: 1.6;
-    overflow-x: hidden;
 }
 
+/* Títulos con fuente especial */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
@@ -64,8 +57,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================
-   NAVBAR (Bootstrap Override)
-   ============================================ */
+    NAVBAR MEJORADO
+    ============================================ */
 .navbar {
     background: var(--primary-dark) !important;
     box-shadow: var(--shadow-lg);
@@ -146,15 +139,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================
-   MAIN CONTENT
-   ============================================ */
+    MAIN CONTENT
+    ============================================ */
 main {
     flex: 1;
 }
 
 /* ============================================
-   HERO SECTION
-   ============================================ */
+    HERO SECTION
+    ============================================ */
 .hero {
     background: var(--primary-dark);
     color: white;
@@ -182,8 +175,8 @@ main {
 }
 
 /* ============================================
-   CARDS (Bootstrap Override)
-   ============================================ */
+    CARDS MEJORADAS
+    ============================================ */
 .card {
     border: none;
     border-radius: 16px;
@@ -215,8 +208,8 @@ main {
 }
 
 /* ============================================
-   BOTONES (Bootstrap Override)
-   ============================================ */
+    BOTONES MEJORADOS
+    ============================================ */
 .btn {
     font-weight: 600;
     padding: 0.75rem 1.75rem;
@@ -257,8 +250,8 @@ main {
 }
 
 /* ============================================
-   BADGES (Bootstrap Override)
-   ============================================ */
+    BADGES MEJORADOS
+    ============================================ */
 .badge {
     font-size: 0.85rem;
     font-weight: 600;
@@ -274,8 +267,8 @@ main {
 }
 
 /* ============================================
-   ALERTS (Bootstrap Override)
-   ============================================ */
+    ALERTS MEJORADOS
+    ============================================ */
 .alert {
     border: none;
     border-radius: 12px;
@@ -289,8 +282,8 @@ main {
 }
 
 /* ============================================
-   FOOTER
-   ============================================ */
+    FOOTER MEJORADO
+    ============================================ */
 .footer {
     background: var(--primary-dark);
     color: white;
@@ -308,8 +301,8 @@ main {
 }
 
 /* ============================================
-   TABLA (Bootstrap Override)
-   ============================================ */
+    TABLA MEJORADA
+    ============================================ */
 .table {
     border-radius: 12px;
     overflow: hidden;
@@ -343,8 +336,8 @@ main {
 }
 
 /* ============================================
-   ANIMACIONES
-   ============================================ */
+    ANIMACIONES
+    ============================================ */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -360,15 +353,10 @@ main {
     animation: fadeInUp 0.6s ease-out;
 }
 
-/* --------------- FINAL PARTE BASES------------------ */
-
 /* ============================================
-   INICIO PARTE INDEX
-   ============================================ */
+    ESTILOS DE INDEX
+    ============================================ */
 
-/* ============================================
-   VIDEO HERO SECTION
-   ============================================ */
 .video-hero {
     position: relative;
     height: 600px;
@@ -441,8 +429,8 @@ main {
 }
 
 /* ============================================
-   FEATURES SECTION MEJORADA
-   ============================================ */
+    FEATURES SECTION MEJORADA
+    ============================================ */
 .features-section {
     background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
     padding: 5rem 0;
@@ -486,8 +474,8 @@ main {
 }
 
 /* ============================================
-   BARBERÍAS SECTION
-   ============================================ */
+    BARBERÍAS SECTION
+    ============================================ */
 .barberias-section {
     padding: 5rem 0;
     background: white;
@@ -589,8 +577,8 @@ main {
 }
 
 /* ============================================
-   CTA SECTION
-   ============================================ */
+    CTA SECTION
+    ============================================ */
 .cta-section {
     background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
     padding: 5rem 0;
@@ -646,9 +634,21 @@ main {
 }
 
 /* ============================================
-   RESPONSIVE INDEX
-   ============================================ */
+    RESPONSIVE
+    ============================================ */
 @media (max-width: 768px) {
+    .hero {
+        padding: 3rem 0;
+    }
+    
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+
     .video-hero {
         height: 500px;
     }
@@ -686,266 +686,3 @@ main {
         flex-direction: column;
     }
 }
-
-/* Animación de entrada */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ============================================
-   FINAL PARTE INDEX
-   ============================================ */
-
-/* ============================================
-   SIDEBAR (Sistema antiguo - mantener por compatibilidad)
-   ============================================ */
-#sidebar-toggle {
-    display: none;
-}
-
-.body-label {
-    position: fixed;
-    height: 100%;
-    width: calc(100% - 280px);
-    z-index: 30;
-    right: -100%;
-    top: 0;
-}
-
-#sidebar-toggle:checked ~ .sidebar {
-    left: -100%;
-}
-
-#sidebar-toggle:checked ~ .main-content header {
-    left: 0;
-    right: 0;
-    width: 100%;
-}
-
-#sidebar-toggle:checked ~ .main-content {
-    margin-left: 0;
-}
-
-.sidebar {
-    width: 280px;
-    height: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(180deg, #1a202e 0%, #261c48 100%);
-    color: #fff;
-    z-index: 20;
-    transition: left 300ms;
-}
-
-.sidebar-brand {
-    height: 80px;
-}
-
-.brand-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.sidebar-user {
-    margin: 0rem 0rem 1rem 0rem;
-    text-align: center;
-}
-
-.sidebar-user img {
-    width: 40%;
-}
-
-.sidebar-user h3 {
-    font-size: 1rem;
-}
-
-.sidebar-user span {
-    font-size: 0.85rem;
-}
-
-.sidebar-menu {
-    margin-top: 3rem;
-}
-
-.menu-head {
-    text-transform: uppercase;
-    color: #8da2fb;
-    font-size: 0.75rem;
-    font-weight: 500;
-    margin-bottom: 0.8rem;
-}
-
-.sidebar-menu ul {
-    margin-bottom: 1.3rem;
-}
-
-.sidebar-menu li {
-    margin-bottom: 1rem;
-}
-
-.sidebar-menu li a {
-    color: #efefef;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-}
-
-.sidebar-menu li a span {
-    font-size: 1.5rem;
-    display: inline-block;
-    margin: 0.8rem;
-}
-
-.main-content {
-    margin-left: 280px;
-    transition: margin-left 300ms;
-}
-
-header {
-    height: 70px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    position: fixed;
-    left: 280px;
-    width: calc(100% - 280px);
-    top: 0;
-    z-index: 20;
-    background: #fff;
-    box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
-    transition: left 300ms;
-}
-
-.menu-toggle label {
-    height: 60px;
-    width: 60px;
-    display: grid;
-    place-items: center;
-    font-size: 1.5rem;
-    border-radius: 50%;
-}
-
-.menu-toggle label:hover {
-    background: #efefef;
-    cursor: pointer;
-}
-
-main {
-    padding: 1.5rem;
-    background: #f1f5f9;
-    min-height: calc(100vh - 70px);
-    margin-top: 70px;
-}
-
-.page-header {
-    display: flex;
-    justify-content: space-between;
-}
-
-/* ============================================
-   HOME PAGE (Dashboard)
-   ============================================ */
-.home-container {
-    background: #fff;
-    margin-top: 2rem;
-    padding: 2rem 2.5rem;
-    border-radius: 12px;
-    box-shadow: 4px 4px 12px rgba(0,0,0,0.08);
-    animation: fadeInUp 0.6s ease-in-out;
-}
-
-.home-intro p {
-    color: #374151;
-    font-size: 1rem;
-    line-height: 1.8;
-    margin-bottom: 1.2rem;
-    text-align: justify;
-}
-
-.home-intro p:first-of-type {
-    margin-top: 1rem;
-}
-
-.page-header h1 {
-    font-size: 2rem;
-    color: #1e3a8a;
-    font-weight: 600;
-}
-
-.page-header small {
-    display: block;
-    color: #475569;
-    font-size: 1rem;
-    margin-top: 0.3rem;
-    font-weight: 500;
-}
-
-/* ============================================
-   RESPONSIVE - Sidebar
-   ============================================ */
-@media only screen and (max-width: 1124px) {
-    .sidebar {
-        left: -100%;
-        z-index: 30;
-    }
-
-    .main-content {
-        margin-left: 0;
-    }
-
-    header {
-        left: 0;
-        width: 100%;
-    }
-
-    #sidebar-toggle:checked ~ .sidebar {
-        left: 0;
-    }
-
-    #sidebar-toggle:checked ~ .body-label {
-        right: 0;
-    }
-
-    .cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media only screen and (max-width: 768px) {
-    .cards {
-        grid-template-columns: 100%;
-    }
-    
-    .page-header {
-        display: block;
-    }
-    
-    .header-actions {
-        margin-top: 1rem;
-        text-align: right;
-    }
-    
-    .hero {
-        padding: 3rem 0;
-    }
-    
-    .navbar-brand {
-        font-size: 1.5rem;
-    }
-    
-    .card-body {
-        padding: 1.25rem;
-    }
-}
-
