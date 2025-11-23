@@ -89,9 +89,33 @@ def propietario_required(f):
 
 def barbero_required(f):
     """Decorador para rutas de barberos"""
-    return role_required('Admin', 'Barbero')(f)
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not is_authenticated():
+            flash('Por favor inicia sesión para acceder a esta página.', 'warning')
+            return redirect(url_for('auth.login'))
+        
+        user = get_current_user()
+        if user['rol_nombre'] not in ['Admin', 'Barbero']:
+            flash('No tienes permisos para acceder a esta página.', 'danger')
+            return redirect(url_for('main.index'))
+        
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def cliente_required(f):
     """Decorador para rutas de clientes"""
-    return role_required('Cliente')(f)
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not is_authenticated():
+            flash('Por favor inicia sesión para acceder a esta página.', 'warning')
+            return redirect(url_for('auth.login'))
+        
+        user = get_current_user()
+        if user['rol_nombre'] != 'Cliente':
+            flash('No tienes permisos para acceder a esta página.', 'danger')
+            return redirect(url_for('main.index'))
+        
+        return f(*args, **kwargs)
+    return decorated_function

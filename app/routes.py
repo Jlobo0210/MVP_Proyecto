@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, date, time as datetime_time
 main_bp = Blueprint('main', __name__)
 auth_bp = Blueprint('auth', __name__)
 cliente_bp = Blueprint('cliente', __name__)
+barbero_bp = Blueprint('barbero', __name__)
 
 
 # ============================================
@@ -68,7 +69,7 @@ def login():
             elif user['rol_nombre'] == 'Cliente':
                 return redirect(url_for('cliente.dashboard'))
             elif user['rol_nombre'] == 'Barbero':
-                return redirect(url_for('main.index'))  # TODO: crear dashboard barbero
+                return redirect(url_for('barbero.dashboard'))
             elif user['rol_nombre'] == 'Propietario':
                 return redirect(url_for('main.index'))  # TODO: crear dashboard propietario
             else:
@@ -253,11 +254,198 @@ def horarios_disponibles():
 
 
 @cliente_bp.route('/perfil')
-@login_required
+@cliente_required
 def perfil():
     """Perfil del cliente"""
     user = get_current_user()
     return render_template('cliente/perfil.html', user=user)
+
+
+# ============================================
+# RUTAS DE BARBERO (Barbero Blueprint)
+# ============================================
+
+@barbero_bp.route('/dashboard')
+@barbero_required
+def dashboard():
+    """Dashboard principal del barbero"""
+    user = get_current_user()
+    
+    # Obtener información del barbero
+    barbero = obtener_barbero_por_usuario_id(user['id'])
+    if not barbero:
+        flash('No se encontró tu perfil de barbero', 'danger')
+        return redirect(url_for('main.index'))
+    
+    # Obtener citas de hoy
+    hoy = date.today()
+    citas_hoy = obtener_citas_por_barbero(barbero['id'], fecha=hoy)
+    
+    # Filtrar citas por estado
+    citas_pendientes = [c for c in citas_hoy if c['estado_nombre'] == 'Pendiente']
+    citas_confirmadas = [c for c in citas_hoy if c['estado_nombre'] == 'Confirmada']
+    citas_completadas_hoy = [c for c in citas_hoy if c['estado_nombre'] == 'Completada']
+    
+    # Obtener próximas citas (siguientes 7 días)
+    proximas_citas = []
+    for i in range(1, 8):
+        fecha_futura = hoy + timedelta(days=i)
+        citas_fecha = obtener_citas_por_barbero(barbero['id'], fecha=fecha_futura)
+        citas_activas = [c for c in citas_fecha if c['estado_nombre'] in ['Pendiente', 'Confirmada']]
+        proximas_citas.extend(citas_activas)
+    
+    # Obtener estadísticas
+    estadisticas = obtener_estadisticas_barbero(barbero['id'])
+    
+    return render_template('barbero/dashboard.html',
+                         barbero=barbero,
+                         citas_pendientes=citas_pendientes,
+                         citas_confirmadas=citas_confirmadas,
+                         citas_completadas_hoy=citas_completadas_hoy,
+                         proximas_citas=proximas_citas[:5],  # Solo las próximas 5
+                         estadisticas=estadisticas,
+                         fecha_hoy=hoy)
+
+
+@barbero_bp.route('/agenda')
+@barbero_required
+def agenda():
+    """Ver agenda completa del barbero"""
+    user = get_current_user()
+    barbero = obtener_barbero_por_usuario_id(user['id'])
+    
+    if not barbero:
+        flash('No se encontró tu perfil de barbero', 'danger')
+        return redirect(url_for('main.index'))
+    
+    # Filtros opcionales
+    fecha_filtro = request.args.get('fecha')
+    estado_filtro = request.args.get('estado')
+    
+    if fecha_filtro:
+        try:
+            fecha = datetime.strptime(fecha_filtro, '%Y-%m-%d').date()
+        except:
+            fecha = None
+    else:
+        fecha = None
+    
+    # Obtener todas las citas
+    citas = obtener_citas_por_barbero(barbero['id'], fecha=fecha, estado=estado_filtro)
+    
+    return render_template('barbero/agenda.html',
+                         barbero=barbero,
+                         citas=citas,
+                         fecha_filtro=fecha_filtro,
+                         estado_filtro=estado_filtro)
+
+
+@barbero_bp.route('/cita/<int:cita_id>')
+@barbero_required
+def ver_cita(cita_id):
+    """Ver detalles de una cita específica"""
+    user = get_current_user()
+    barbero = obtener_barbero_por_usuario_id(user['id'])
+    
+    if not barbero:
+        flash('No se encontró tu perfil de barbero', 'danger')
+        return redirect(url_for('main.index'))
+    
+    cita = obtener_cita_por_id(cita_id)
+    
+    if not cita:
+        flash('Cita no encontrada', 'danger')
+        return redirect(url_for('barbero.dashboard'))
+    
+    # Verificar que la cita pertenece a este barbero
+    if cita['barbero_id'] != barbero['id']:
+        flash('No tienes permiso para ver esta cita', 'danger')
+        return redirect(url_for('barbero.dashboard'))
+    
+    return render_template('barbero/ver_cita.html', cita=cita, barbero=barbero)
+
+
+@barbero_bp.route('/cita/<int:cita_id>/cambiar-estado', methods=['POST'])
+@barbero_required
+def cambiar_estado(cita_id):
+    """Cambiar el estado de una cita"""
+    user = get_current_user()
+    barbero = obtener_barbero_por_usuario_id(user['id'])
+    
+    if not barbero:
+        flash('No se encontró tu perfil de barbero', 'danger')
+        return redirect(url_for('main.index'))
+    
+    cita = obtener_cita_por_id(cita_id)
+    
+    if not cita or cita['barbero_id'] != barbero['id']:
+        flash('No tienes permiso para modificar esta cita', 'danger')
+        return redirect(url_for('barbero.dashboard'))
+    
+    nuevo_estado = request.form.get('nuevo_estado')
+    notas_barbero = request.form.get('notas_barbero', '')
+    
+    # Obtener ID del nuevo estado
+    estado = obtener_estado_cita_por_nombre(nuevo_estado)
+    
+    if not estado:
+        flash('Estado inválido', 'danger')
+        return redirect(url_for('barbero.ver_cita', cita_id=cita_id))
+    
+    try:
+        cambiar_estado_cita(cita_id, estado['id'], notas_barbero if notas_barbero else None)
+        flash(f'Estado de la cita cambiado a: {nuevo_estado}', 'success')
+    except Exception as e:
+        flash(f'Error al cambiar estado: {str(e)}', 'danger')
+    
+    return redirect(url_for('barbero.ver_cita', cita_id=cita_id))
+
+
+@barbero_bp.route('/estadisticas')
+@barbero_required
+def estadisticas():
+    """Ver estadísticas detalladas del barbero"""
+    user = get_current_user()
+    barbero = obtener_barbero_por_usuario_id(user['id'])
+    
+    if not barbero:
+        flash('No se encontró tu perfil de barbero', 'danger')
+        return redirect(url_for('main.index'))
+    
+    estadisticas = obtener_estadisticas_barbero(barbero['id'])
+    
+    # Obtener todas las citas para más estadísticas
+    todas_citas = obtener_citas_por_barbero(barbero['id'])
+    
+    # Calcular ingresos totales
+    ingresos_totales = sum(c['precio_final'] for c in todas_citas if c['estado_nombre'] == 'Completada')
+    
+    # Citas por estado
+    citas_por_estado = {}
+    for cita in todas_citas:
+        estado = cita['estado_nombre']
+        citas_por_estado[estado] = citas_por_estado.get(estado, 0) + 1
+    
+    return render_template('barbero/estadisticas.html',
+                         barbero=barbero,
+                         estadisticas=estadisticas,
+                         ingresos_totales=ingresos_totales,
+                         citas_por_estado=citas_por_estado,
+                         todas_citas=todas_citas)
+
+
+@barbero_bp.route('/perfil')
+@barbero_required
+def perfil():
+    """Perfil del barbero"""
+    user = get_current_user()
+    barbero = obtener_barbero_por_usuario_id(user['id'])
+    
+    if not barbero:
+        flash('No se encontró tu perfil de barbero', 'danger')
+        return redirect(url_for('main.index'))
+    
+    return render_template('barbero/perfil.html', user=user, barbero=barbero)
 
 
 # ============================================

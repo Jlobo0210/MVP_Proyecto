@@ -402,3 +402,151 @@ def obtener_estadisticas_barbero(barbero_id):
                 'ingreso_promedio': float(row[2]) if row[2] else 0
             }
         return None
+
+
+# --- FUNCIONES ESPECÍFICAS PARA BARBEROS ---
+
+def obtener_barbero_por_usuario_id(usuario_id):
+    """Obtiene el registro de barbero asociado a un usuario"""
+    query = """
+        SELECT b.id, b.usuario_id, b.barberia_id, b.especialidad, 
+               b.años_experiencia, b.calificacion_promedio, b.total_servicios,
+               bar.nombre as barberia_nombre
+        FROM Barberos b
+        INNER JOIN Barberias bar ON b.barberia_id = bar.id
+        WHERE b.usuario_id = ? AND b.activo = 1
+    """
+    with get_db_cursor() as cursor:
+        cursor.execute(query, (usuario_id,))
+        row = cursor.fetchone()
+        if row:
+            return {
+                'id': row[0],
+                'usuario_id': row[1],
+                'barberia_id': row[2],
+                'especialidad': row[3],
+                'años_experiencia': row[4],
+                'calificacion_promedio': float(row[5]) if row[5] else 0,
+                'total_servicios': row[6],
+                'barberia_nombre': row[7]
+            }
+        return None
+
+
+def obtener_citas_por_barbero(barbero_id, fecha=None, estado=None):
+    """Obtiene las citas de un barbero, opcionalmente filtradas por fecha y estado"""
+    query = """
+        SELECT c.id, c.fecha, c.hora_inicio, c.hora_fin,
+               u.nombre + ' ' + u.apellido as cliente_nombre,
+               u.telefono as cliente_telefono,
+               s.nombre as servicio_nombre,
+               s.precio as servicio_precio,
+               c.precio_final,
+               e.nombre as estado_nombre,
+               e.color as estado_color,
+               e.id as estado_id,
+               c.notas_cliente,
+               c.notas_barbero
+        FROM Citas c
+        INNER JOIN Usuarios u ON c.cliente_id = u.id
+        INNER JOIN Servicios s ON c.servicio_id = s.id
+        INNER JOIN Estados_Citas e ON c.estado_id = e.id
+        WHERE c.barbero_id = ?
+    """
+    params = [barbero_id]
+    
+    if fecha:
+        query += " AND c.fecha = ?"
+        params.append(fecha)
+    
+    if estado:
+        query += " AND e.nombre = ?"
+        params.append(estado)
+    
+    query += " ORDER BY c.fecha DESC, c.hora_inicio DESC"
+    
+    with get_db_cursor() as cursor:
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+        citas = []
+        for row in rows:
+            citas.append({
+                'id': row[0],
+                'fecha': row[1],
+                'hora_inicio': row[2],
+                'hora_fin': row[3],
+                'cliente_nombre': row[4],
+                'cliente_telefono': row[5],
+                'servicio_nombre': row[6],
+                'servicio_precio': float(row[7]),
+                'precio_final': float(row[8]) if row[8] else float(row[7]),
+                'estado_nombre': row[9],
+                'estado_color': row[10],
+                'estado_id': row[11],
+                'notas_cliente': row[12],
+                'notas_barbero': row[13]
+            })
+        return citas
+
+
+def obtener_cita_por_id(cita_id):
+    """Obtiene una cita por su ID con toda la información"""
+    query = """
+        SELECT c.id, c.cliente_id, c.barbero_id, c.servicio_id, 
+               c.fecha, c.hora_inicio, c.hora_fin, c.estado_id,
+               c.notas_cliente, c.notas_barbero, c.precio_final,
+               u.nombre + ' ' + u.apellido as cliente_nombre,
+               s.nombre as servicio_nombre,
+               e.nombre as estado_nombre
+        FROM Citas c
+        INNER JOIN Usuarios u ON c.cliente_id = u.id
+        INNER JOIN Servicios s ON c.servicio_id = s.id
+        INNER JOIN Estados_Citas e ON c.estado_id = e.id
+        WHERE c.id = ?
+    """
+    with get_db_cursor() as cursor:
+        cursor.execute(query, (cita_id,))
+        row = cursor.fetchone()
+        if row:
+            return {
+                'id': row[0],
+                'cliente_id': row[1],
+                'barbero_id': row[2],
+                'servicio_id': row[3],
+                'fecha': row[4],
+                'hora_inicio': row[5],
+                'hora_fin': row[6],
+                'estado_id': row[7],
+                'notas_cliente': row[8],
+                'notas_barbero': row[9],
+                'precio_final': float(row[10]) if row[10] else 0,
+                'cliente_nombre': row[11],
+                'servicio_nombre': row[12],
+                'estado_nombre': row[13]
+            }
+        return None
+
+
+def cambiar_estado_cita(cita_id, nuevo_estado_id, notas_barbero=None):
+    """Cambia el estado de una cita"""
+    query = """
+        UPDATE Citas 
+        SET estado_id = ?, 
+            notas_barbero = ?,
+            fecha_modificacion = GETDATE()
+        WHERE id = ?
+    """
+    with get_db_cursor(commit=True) as cursor:
+        cursor.execute(query, (nuevo_estado_id, notas_barbero, cita_id))
+        return True
+
+
+def obtener_estado_cita_por_nombre(nombre_estado):
+    """Obtiene un estado de cita por su nombre"""
+    query = "SELECT id, nombre, color FROM Estados_Citas WHERE nombre = ?"
+    with get_db_cursor() as cursor:
+        cursor.execute(query, (nombre_estado,))
+        row = cursor.fetchone()
+        if row:
+            return {'id': row[0], 'nombre': row[1], 'color': row[2]}
+        return None

@@ -12,11 +12,12 @@ def create_app():
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
     
     # Registrar rutas
-    from app.routes import main_bp, auth_bp, cliente_bp
+    from app.routes import main_bp, auth_bp, cliente_bp, barbero_bp
     
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(cliente_bp, url_prefix='/cliente')
+    app.register_blueprint(barbero_bp, url_prefix='/barbero')
     
     # Context processor para tener el usuario disponible en todos los templates
     from app.auth import get_current_user, is_authenticated
