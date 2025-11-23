@@ -30,9 +30,17 @@
                                     <h5 class="card-title mb-0">
                                         <i class="bi bi-scissors text-primary"></i> {{ cita.servicio }}
                                     </h5>
-                                    <span class="badge" style="background-color: {{ cita.estado_color }}">
-                                        {{ cita.estado }}
-                                    </span>
+                                    {% if cita.estado == 'Pendiente' %}
+                                        <span class="badge badge-estado badge-pendiente">{{ cita.estado }}</span>
+                                    {% elif cita.estado == 'Confirmada' %}
+                                        <span class="badge badge-estado badge-confirmada">{{ cita.estado }}</span>
+                                    {% elif cita.estado == 'Completada' %}
+                                        <span class="badge badge-estado badge-completada">{{ cita.estado }}</span>
+                                    {% elif cita.estado == 'Cancelada' %}
+                                        <span class="badge badge-estado badge-cancelada">{{ cita.estado }}</span>
+                                    {% else %}
+                                        <span class="badge badge-estado badge-noshow">{{ cita.estado }}</span>
+                                    {% endif %}
                                 </div>
                                 
                                 <p class="card-text mb-2">
@@ -59,9 +67,12 @@
                                 </p>
                                 
                                 <div class="mt-3">
-                                    <button class="btn btn-sm btn-outline-danger" disabled>
-                                        <i class="bi bi-x-circle"></i> Cancelar
-                                    </button>
+                                    <form method="POST" action="{{ url_for('cliente.cancelar_cita', cita_id=cita.id) }}" 
+                                          onsubmit="return confirm('¿Estás seguro que deseas cancelar esta cita?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-x-circle"></i> Cancelar Cita
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -102,9 +113,17 @@
                                 <td>{{ cita.barbero }}</td>
                                 <td>${{ '{:,.0f}'.format(cita.precio) }}</td>
                                 <td>
-                                    <span class="badge badge-estado" style="background-color: {{ cita.estado_color }}">
-                                        {{ cita.estado }}
-                                    </span>
+                                    {% if cita.estado == 'Pendiente' %}
+                                        <span class="badge badge-estado badge-pendiente">{{ cita.estado }}</span>
+                                    {% elif cita.estado == 'Confirmada' %}
+                                        <span class="badge badge-estado badge-confirmada">{{ cita.estado }}</span>
+                                    {% elif cita.estado == 'Completada' %}
+                                        <span class="badge badge-estado badge-completada">{{ cita.estado }}</span>
+                                    {% elif cita.estado == 'Cancelada' %}
+                                        <span class="badge badge-estado badge-cancelada">{{ cita.estado }}</span>
+                                    {% else %}
+                                        <span class="badge badge-estado badge-noshow">{{ cita.estado }}</span>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

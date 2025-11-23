@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Estadísticas - BarberBook{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="bi bi-bar-chart"></i> Mis Estadísticas</h1>
+            <p class="text-muted">{{ barbero.barberia_nombre }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('barbero.dashboard') }}" class="btn btn-outline-primary">
+                <i class="bi bi-house"></i> Volver al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Métricas Principales -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-calendar-check display-4 text-primary"></i>
+                    <h2 class="mt-3 mb-0">{{ estadisticas.total_citas or 0 }}</h2>
+                    <p class="text-muted mb-0">Total de Citas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-check-circle display-4 text-success"></i>
+                    <h2 class="mt-3 mb-0">{{ estadisticas.completadas or 0 }}</h2>
+                    <p class="text-muted mb-0">Completadas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-star-fill display-4 text-warning"></i>
+                    <h2 class="mt-3 mb-0">{{ '{:.1f}'.format(barbero.calificacion_promedio) }}</h2>
+                    <p class="text-muted mb-0">Calificación</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-cash-stack display-4 text-success"></i>
+                    <h2 class="mt-3 mb-0">${{ '{:,.0f}'.format(ingresos_totales) }}</h2>
+                    <p class="text-muted mb-0">Ingresos Totales</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Citas por Estado -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pie-chart"></i> Citas por Estado
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if citas_por_estado %}
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <tbody>
+                                    {% for estado, cantidad in citas_por_estado.items() %}
+                                    <tr>
+                                        <td>
+                                            {% if estado == 'Pendiente' %}
+                                                <span class="badge bg-warning">{{ estado }}</span>
+                                            {% elif estado == 'Confirmada' %}
+                                                <span class="badge bg-success">{{ estado }}</span>
+                                            {% elif estado == 'Completada' %}
+                                                <span class="badge bg-primary">{{ estado }}</span>
+                                            {% elif estado == 'Cancelada' %}
+                                                <span class="badge bg-danger">{{ estado }}</span>
+                                            {% else %}
+                                                <span class="badge bg-dark">{{ estado }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <strong>{{ cantidad }}</strong>
+                                            <small class="text-muted">
+                                                ({{ '{:.1f}'.format(cantidad * 100 / estadisticas.total_citas) }}%)
+                                            </small>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted mb-0">No hay datos disponibles</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up"></i> Rendimiento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="form-label">Tasa de Completación</label>
+                        <div class="progress" style="height: 30px;">
+                            {% set tasa = (estadisticas.completadas * 100 / estadisticas.total_citas) if estadisticas.total_citas > 0 else 0 %}
+                            <div class="progress-bar bg-success" style="width: {{ tasa }}%">
+                                {{ '{:.1f}'.format(tasa) }}%
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ingreso Promedio por Cita</label>
+                        <h4 class="text-success mb-0">
+                            ${{ '{:,.0f}'.format(estadisticas.ingreso_promedio) }}
+                        </h4>
+                    </div>
+
+                    {% if estadisticas.total_citas > 0 %}
+                    <div>
+                        <label class="form-label">Total de Servicios</label>
+                        <h4 class="text-primary mb-0">{{ barbero.total_servicios }}</h4>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historial Reciente -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-clock-history"></i> Historial Reciente
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if todas_citas %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Servicio</th>
+                                <th>Estado</th>
+                                <th>Ingreso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cita in todas_citas[:10] %}
+                            <tr>
+                                <td>{{ cita.fecha.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ cita.cliente_nombre }}</td>
+                                <td>{{ cita.servicio_nombre }}</td>
+                                <td>
+                                    {% if cita.estado_nombre == 'Pendiente' %}
+                                        <span class="badge bg-warning">{{ cita.estado_nombre }}</span>
+                                    {% elif cita.estado_nombre == 'Confirmada' %}
+                                        <span class="badge bg-success">{{ cita.estado_nombre }}</span>
+                                    {% elif cita.estado_nombre == 'Completada' %}
+                                        <span class="badge bg-primary">{{ cita.estado_nombre }}</span>
+                                    {% elif cita.estado_nombre == 'Cancelada' %}
+                                        <span class="badge bg-danger">{{ cita.estado_nombre }}</span>
+                                    {% else %}
+                                        <span class="badge bg-dark">{{ cita.estado_nombre }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if cita.estado_nombre == 'Completada' %}
+                                        <strong class="text-success">${{ '{:,.0f}'.format(cita.precio_final) }}</strong>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if todas_citas|length > 10 %}
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('barbero.agenda') }}" class="btn btn-outline-primary">
+                        Ver Todas las Citas <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            {% else %}
+                <p class="text-center text-muted mb-0">No hay citas en el historial</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

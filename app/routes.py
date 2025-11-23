@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.database import *
 from app.auth import *
-from datetime import datetime, timedelta, date, time as datetime_time
+from datetime import datetime, timedelta, date
 
 # === BLUEPRINTS ===
 
@@ -261,6 +261,23 @@ def perfil():
     return render_template('cliente/perfil.html', user=user)
 
 
+@cliente_bp.route('/cita/<int:cita_id>/cancelar', methods=['POST'])
+@cliente_required
+def cancelar_cita(cita_id):
+    """Cancelar una cita"""
+    user = get_current_user()
+    
+    # Intentar cancelar la cita
+    exito, mensaje = cancelar_cita_cliente(cita_id, user['id'])
+    
+    if exito:
+        flash(mensaje, 'success')
+    else:
+        flash(mensaje, 'danger')
+    
+    return redirect(url_for('cliente.dashboard'))
+
+
 # ============================================
 # RUTAS DE BARBERO (Barbero Blueprint)
 # ============================================
@@ -296,6 +313,12 @@ def dashboard():
     
     # Obtener estadísticas
     estadisticas = obtener_estadisticas_barbero(barbero['id'])
+    if not estadisticas:
+        estadisticas = {
+            'total_citas': 0,
+            'completadas': 0,
+            'ingreso_promedio': 0
+        }
     
     return render_template('barbero/dashboard.html',
                          barbero=barbero,

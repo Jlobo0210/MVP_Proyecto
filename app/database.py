@@ -541,6 +541,39 @@ def cambiar_estado_cita(cita_id, nuevo_estado_id, notas_barbero=None):
         return True
 
 
+def cancelar_cita_cliente(cita_id, cliente_id):
+    """Cancela una cita desde el lado del cliente"""
+    # Verificar que la cita pertenece al cliente
+    query_verificar = """
+        SELECT c.id, c.cliente_id, c.estado_id, e.nombre as estado_nombre
+        FROM Citas c
+        INNER JOIN Estados_Citas e ON c.estado_id = e.id
+        WHERE c.id = ? AND c.cliente_id = ?
+    """
+    with get_db_cursor() as cursor:
+        cursor.execute(query_verificar, (cita_id, cliente_id))
+        cita = cursor.fetchone()
+        
+        if not cita:
+            return False, "Cita no encontrada"
+        
+        # Verificar que la cita se puede cancelar (solo Pendiente o Confirmada)
+        if cita[3] not in ['Pendiente', 'Confirmada']:
+            return False, f"No puedes cancelar una cita con estado: {cita[3]}"
+    
+    # Obtener ID del estado "Cancelada"
+    estado_cancelada = obtener_estado_cita_por_nombre('Cancelada')
+    if not estado_cancelada:
+        return False, "Error del sistema"
+    
+    # Cancelar la cita
+    try:
+        cambiar_estado_cita(cita_id, estado_cancelada['id'], "Cancelada por el cliente")
+        return True, "Cita cancelada exitosamente"
+    except Exception as e:
+        return False, f"Error al cancelar: {str(e)}"
+
+
 def obtener_estado_cita_por_nombre(nombre_estado):
     """Obtiene un estado de cita por su nombre"""
     query = "SELECT id, nombre, color FROM Estados_Citas WHERE nombre = ?"
