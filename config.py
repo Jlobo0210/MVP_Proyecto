@@ -13,11 +13,10 @@ class Config:
     DB_NAME = os.environ.get('DB_NAME') or 'BarberiaReservas'
     DB_USER = os.environ.get('DB_USER') or 'AdministradorBarberia'
     DB_PASSWORD = os.environ.get('DB_PASSWORD') or 'AdministradorBarberia10'
-    DB_DRIVER = 'ODBC Driver 17 for SQL Server'
-    
+
     # Connection string para pyodbc
     DB_CONNECTION_STRING = (
-        f'DRIVER={{{DB_DRIVER}}};'
+        f'DRIVER={{ODBC Driver 17 for SQL Server}};'
         f'SERVER={DB_SERVER};'
         f'DATABASE={DB_NAME};'
         f'UID={DB_USER};'

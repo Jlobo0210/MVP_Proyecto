@@ -11,69 +11,381 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
-        <!-- Custom CSS -->
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS Mejorado -->
     <style>
+        /* ============================================
+           VARIABLES DE COLORES - Tema Barbería Moderna
+           ============================================ */
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #e74c3c;
-            --accent-color: #3498db;
+            /* Colores principales - Paleta oscura y elegante */
+            --primary-dark: #1a1a1a;        /* Negro profundo */
+            --primary-gold: #d4af37;        /* Dorado clásico barbería */
+            --primary-red: #c41e3a;         /* Rojo barbería */
+            --accent-blue: #2c5f7e;         /* Azul profundo */
+            
+            /* Grises */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* Sombras */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            
+            /* Transiciones */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* ============================================
+           ESTILOS BASE
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
+            font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background-color: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+        
+        /* Títulos con fuente especial */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        /* ============================================
+           NAVBAR MEJORADO
+           ============================================ */
+        .navbar {
+            background: var(--primary-dark) !important;
+            box-shadow: var(--shadow-lg);
+            padding: 1rem 0;
         }
         
         .navbar-brand {
-            font-weight: bold;
-            font-size: 1.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.75rem;
+            letter-spacing: -0.5px;
+            transition: var(--transition);
+        }
+        
+        .navbar-brand:hover {
+            transform: translateY(-2px);
         }
         
         .navbar-brand i {
-            color: var(--secondary-color);
+            color: var(--primary-gold);
+            font-size: 2rem;
+            margin-right: 0.5rem;
+            display: inline-block;
+            transition: var(--transition);
         }
         
+        .navbar-brand:hover i {
+            transform: rotate(360deg);
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9) !important;
+            margin: 0 0.5rem;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--primary-gold) !important;
+            transform: translateY(-2px);
+        }
+        
+        .navbar .btn-primary {
+            background: linear-gradient(135deg, var(--primary-gold) 0%, #b8941f 100%);
+            border: none;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: var(--transition);
+        }
+        
+        .navbar .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: var(--shadow-xl);
+            border-radius: 12px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: var(--transition);
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--gray-100);
+            transform: translateX(5px);
+        }
+        
+        /* ============================================
+           MAIN CONTENT
+           ============================================ */
         main {
             flex: 1;
         }
         
+        /* ============================================
+           HERO SECTION
+           ============================================ */
         .hero {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            background: var(--primary-dark);
             color: white;
-            padding: 4rem 0;
+            padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
         }
         
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(196, 30, 58, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .hero .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* ============================================
+           CARDS MEJORADAS
+           ============================================ */
         .card {
-            transition: transform 0.2s;
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
             height: 100%;
+            overflow: hidden;
+            background: white;
         }
         
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .card-body {
+            padding: 1.75rem;
+        }
+        
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+        }
+        
+        .card-text {
+            color: var(--gray-600);
+        }
+        
+        /* ============================================
+           BOTONES MEJORADOS
+           ============================================ */
+        .btn {
+            font-weight: 600;
+            padding: 0.75rem 1.75rem;
+            border-radius: 50px;
+            transition: var(--transition);
+            border: none;
         }
         
         .btn-primary {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #1e4661 100%);
+            box-shadow: 0 4px 15px rgba(44, 95, 126, 0.3);
         }
         
         .btn-primary:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(44, 95, 126, 0.5);
+            background: linear-gradient(135deg, #1e4661 0%, var(--accent-blue) 100%);
         }
         
-        .footer {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 2rem 0;
-            margin-top: auto;
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.5);
+        }
+        
+        .btn-outline-danger {
+            border: 2px solid var(--primary-red);
+            color: var(--primary-red);
+        }
+        
+        .btn-outline-danger:hover {
+            background: var(--primary-red);
+            transform: translateY(-2px);
+        }
+        
+        /* ============================================
+           BADGES MEJORADOS
+           ============================================ */
+        .badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            letter-spacing: 0.5px;
         }
         
         .badge-estado {
             font-size: 0.85rem;
-            padding: 0.35rem 0.65rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+        }
+        
+        /* ============================================
+           ALERTS MEJORADOS
+           ============================================ */
+        .alert {
+            border: none;
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .alert i {
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+        
+        /* ============================================
+           FOOTER MEJORADO
+           ============================================ */
+        .footer {
+            background: var(--primary-dark);
+            color: white;
+            padding: 2.5rem 0;
+            margin-top: auto;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer .text-muted {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+        
+        /* ============================================
+           TABLA MEJORADA
+           ============================================ */
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .table thead {
+            background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-700) 100%);
+            color: white;
+        }
+        
+        .table thead th {
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .table tbody tr {
+            transition: var(--transition);
+        }
+        
+        .table tbody tr:hover {
+            background-color: var(--gray-50);
+            transform: scale(1.01);
+        }
+        
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        
+        /* ============================================
+           ANIMACIONES
+           ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 3rem 0;
+            }
+            
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+            
+            .card-body {
+                padding: 1.25rem;
+            }
         }
     </style>
     
@@ -81,7 +393,7 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('main.index') }}">
                 <i class="bi bi-scissors"></i> BarberBook
@@ -102,10 +414,6 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('cliente.dashboard') }}">Mis Citas</a>
                             </li>
-                        {% elif current_user.rol_nombre == 'Barbero' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('barbero.dashboard') }}">Mi Agenda</a>
-                            </li>
                         {% endif %}
                         
                         <li class="nav-item dropdown">
@@ -113,21 +421,9 @@
                                 <i class="bi bi-person-circle"></i> {{ current_user.nombre }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    {% if current_user.rol_nombre == 'Cliente' %}
-                                        <a class="dropdown-item" href="{{ url_for('cliente.perfil') }}">
-                                            <i class="bi bi-person"></i> Mi Perfil
-                                        </a>
-                                    {% elif current_user.rol_nombre == 'Barbero' %}
-                                        <a class="dropdown-item" href="{{ url_for('barbero.perfil') }}">
-                                            <i class="bi bi-person"></i> Mi Perfil
-                                        </a>
-                                    {% else %}
-                                        <a class="dropdown-item" href="#">
-                                            <i class="bi bi-person"></i> Mi Perfil
-                                        </a>
-                                    {% endif %}
-                                </li>
+                                <li><a class="dropdown-item" href="{{ url_for('cliente.perfil') }}">
+                                    <i class="bi bi-person"></i> Mi Perfil
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
                                     <i class="bi bi-box-arrow-right"></i> Cerrar Sesión

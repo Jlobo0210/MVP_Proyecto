@@ -146,7 +146,7 @@ def seed_database():
             'Bogotá',
             '6011234567',
             'contacto@elclasico.com',
-            'Barbería tradicional con más de 20 años de experiencia. Especialistas en cortes clásicos y modernos.',
+            'Barbería tradicional con un ambiente acogedor y profesional, reconocida por su dedicación al detalle y más de dos décadasofreciendo cortes clásicos y modernos para cada cliente.',
             time(9, 0),
             time(19, 0),
             propietario1_id
@@ -165,7 +165,7 @@ def seed_database():
             'Bogotá',
             '6017654321',
             'info@moderncuts.com',
-            'Estudio de barbería moderna. Cortes de tendencia, diseños y color.',
+            'Estudio de barbería moderna, especializado en cortes de tendencia, diseños personalizados y color profesional para quienes buscan un estilo fresco y distintivo.',
             time(10, 0),
             time(20, 0),
             propietario2_id
