@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container my-5">
     <!-- Header de la Barbería -->
-    <div class="row mb-4">
+    <div class="row mb-4 barberia-header">
         <div class="col-md-8">
             <h1><i class="bi bi-shop text-primary"></i> {{ barberia.nombre }}</h1>
             <p class="lead text-muted">{{ barberia.descripcion }}</p>
@@ -23,24 +23,64 @@
         </div>
     </div>
 
+    <!-- Galería de Imágenes -->
+    <div class="gallery-container" data-barberia-id="{{ barberia.id }}">
+        <div class="gallery-grid">
+            {% set max_visible = 3 %}
+            {% set total = total_images %}
+
+            {% for img in images[:max_visible] %}
+                <div class="gallery-item" data-index="{{ loop.index0 }}">
+                    <img src="{{ url_for('static', filename=img) }}" alt="Foto {{ loop.index }}">
+                </div>
+            {% endfor %}
+
+            {% if total > max_visible %}
+                <div class="gallery-item gallery-item-more" data-index="{{ max_visible }}">
+                    <img src="{{ url_for('static', filename=images[max_visible]) }}" alt="Foto extra">
+                    <div class="overlay">+{{ total - max_visible }}</div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="gallery-lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <button class="lightbox-btn lightbox-prev" onclick="changeImage(-1)">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <div class="lightbox-content">
+            <img id="lightbox-image" class="lightbox-image" src="" alt="">
+        </div>
+        <button class="lightbox-btn lightbox-next" onclick="changeImage(1)">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+        <div class="lightbox-counter">
+            <span id="current-image">1</span> / <span id="total-images">{{ total_images }}</span>
+        </div>
+    </div>
+
     <!-- Información de la Barbería -->
-    <div class="card mb-4">
+    <div class="card mb-4 barberia-info-card">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6 mb-3">
-                    <h5><i class="bi bi-geo-alt text-primary"></i> Ubicación</h5>
+                <div class="col-md-6 mb-3 barberia-info-section">
+                    <h5><i class="bi bi-geo-alt-fill"></i> Ubicación</h5>
                     <p class="mb-0">{{ barberia.direccion }}</p>
                     <p class="text-muted">{{ barberia.ciudad }}</p>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <h5><i class="bi bi-telephone text-primary"></i> Contacto</h5>
+                <div class="col-md-3 mb-3 barberia-info-section">
+                    <h5><i class="bi bi-telephone-fill"></i> Contacto</h5>
                     <p class="mb-1">{{ barberia.telefono }}</p>
                     {% if barberia.email %}
                         <p class="mb-0 small">{{ barberia.email }}</p>
                     {% endif %}
                 </div>
-                <div class="col-md-3 mb-3">
-                    <h5><i class="bi bi-clock text-primary"></i> Horario</h5>
+                <div class="col-md-3 mb-3 barberia-info-section">
+                    <h5><i class="bi bi-clock-fill"></i> Horario</h5>
                     <p class="mb-0">{{ barberia.hora_apertura.strftime('%I:%M %p') }}</p>
                     <p class="mb-0">{{ barberia.hora_cierre.strftime('%I:%M %p') }}</p>
                 </div>
@@ -55,11 +95,11 @@
             <div class="row">
                 {% for servicio in servicios %}
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100">
+                        <div class="card servicio-card h-100">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h5 class="card-title">
-                                        <i class="bi bi-{{ servicio.icono }}"></i> {{ servicio.nombre }}
+                                        <i class="bi bi-scissors"></i> {{ servicio.nombre }}
                                     </h5>
                                     <span class="badge bg-primary">${{ '{:,.0f}'.format(servicio.precio) }}</span>
                                 </div>
@@ -87,16 +127,15 @@
             <div class="row">
                 {% for barbero in barberos %}
                     <div class="col-md-6 mb-4">
-                        <div class="card">
+                        <div class="card barbero-card">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-auto">
                                         {% if barbero.foto_perfil %}
                                             <img src="{{ barbero.foto_perfil }}" alt="{{ barbero.nombre }}" 
-                                                 class="rounded-circle" width="80" height="80">
+                                                 class="barbero-avatar">
                                         {% else %}
-                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" 
-                                                 style="width: 80px; height: 80px; font-size: 2rem;">
+                                            <div class="barbero-avatar-placeholder">
                                                 {{ barbero.nombre[0] }}{{ barbero.apellido[0] }}
                                             </div>
                                         {% endif %}
@@ -133,7 +172,7 @@
     </div>
 
     <!-- CTA Final -->
-    <div class="text-center mt-5 p-5 bg-light rounded">
+    <div class="text-center mt-5 cta-final">
         <h3 class="mb-3">¿Listo para tu próximo corte?</h3>
         <p class="lead mb-4">Reserva tu cita ahora y disfruta de nuestros servicios</p>
         {% if is_authenticated %}
@@ -150,4 +189,73 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Variables pasadas desde Flask (AUTOMÁTICAS)
+    const galleryImages = {{ images | tojson }};
+    const totalGalleryImages = {{ total_images }};
+    let currentImageIndex = 0;
+
+    console.log("Imágenes detectadas:", galleryImages);
+    console.log("Total de imágenes:", totalGalleryImages);
+ 
+    // Event listeners para abrir el lightbox
+    document.querySelectorAll('.gallery-item').forEach((item, index) => {
+        item.addEventListener('click', () => openLightbox(index));
+    });
+    
+    // Función para abrir el lightbox
+    function openLightbox(index) {
+        currentImageIndex = index;
+        updateLightboxImage();
+        document.getElementById('lightbox').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // Función para cerrar el lightbox
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    // Función para cambiar de imagen
+    function changeImage(direction) {
+        currentImageIndex += direction;
+        
+        if (currentImageIndex >= totalGalleryImages) {
+            currentImageIndex = 0;
+        } else if (currentImageIndex < 0) {
+            currentImageIndex = totalGalleryImages - 1;
+        }
+        
+        updateLightboxImage();
+    }
+    
+    // Función para actualizar la imagen del lightbox
+    function updateLightboxImage() {
+        const lightboxImage = document.getElementById('lightbox-image');
+        lightboxImage.src = '/static/' + galleryImages[currentImageIndex];
+        document.getElementById('current-image').textContent = currentImageIndex + 1;
+    }
+    
+    // Cerrar con la tecla ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        } else if (e.key === 'ArrowLeft') {
+            changeImage(-1);
+        } else if (e.key === 'ArrowRight') {
+            changeImage(1);
+        }
+    });
+    
+    // Cerrar al hacer clic fuera de la imagen
+    document.getElementById('lightbox').addEventListener('click', (e) => {
+        if (e.target.id === 'lightbox') {
+            closeLightbox();
+        }
+    });
+</script>
 {% endblock %}

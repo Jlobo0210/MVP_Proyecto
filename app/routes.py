@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
 from app.database import *
 from app.auth import *
 from datetime import datetime, timedelta, date
+import os
 
 # === BLUEPRINTS ===
 
@@ -24,19 +25,34 @@ def index():
 
 @main_bp.route('/barberia/<int:barberia_id>')
 def ver_barberia(barberia_id):
-    """Ver detalles de una barbería específica"""
     barberia = obtener_barberia_por_id(barberia_id)
     if not barberia:
         flash('Barbería no encontrada', 'danger')
         return redirect(url_for('main.index'))
-    
+
     servicios = obtener_servicios_por_barberia(barberia_id)
     barberos = obtener_barberos_por_barberia(barberia_id)
-    
-    return render_template('barberia.html', 
-                         barberia=barberia, 
-                         servicios=servicios,
-                         barberos=barberos)
+
+    # === IMÁGENES ===
+    img_folder = os.path.join(current_app.static_folder, "img")
+    prefix = f"Barberia{barberia_id}_IMG-"
+
+    images = sorted([
+        f"img/{filename}"
+        for filename in os.listdir(img_folder)
+        if filename.startswith(prefix)
+    ])
+
+    total_images = len(images)
+
+    return render_template(
+        'barberia.html',
+        barberia=barberia,
+        servicios=servicios,
+        barberos=barberos,
+        images=images,          # ← DEBE ESTAR AQUÍ
+        total_images=total_images  # ← Y AQUÍ
+    )
 
 
 # ============================================
@@ -277,7 +293,6 @@ def cancelar_cita(cita_id):
     
     return redirect(url_for('cliente.dashboard'))
 
-
 # ============================================
 # RUTAS DE BARBERO (Barbero Blueprint)
 # ============================================
@@ -469,7 +484,6 @@ def perfil():
         return redirect(url_for('main.index'))
     
     return render_template('barbero/perfil.html', user=user, barbero=barbero)
-
 
 # ============================================
 # MANEJADORES DE ERRORES

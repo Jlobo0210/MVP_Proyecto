@@ -146,7 +146,7 @@ def seed_database():
             'Bogotá',
             '6011234567',
             'contacto@elclasico.com',
-            'Barbería tradicional con un ambiente acogedor y profesional, reconocida por su dedicación al detalle y más de dos décadasofreciendo cortes clásicos y modernos para cada cliente.',
+            'Barbería tradicional con un ambiente acogedor y profesional, reconocida por su dedicación al detalle y más de dos décadas ofreciendo cortes clásicos y modernos para cada cliente.',
             time(9, 0),
             time(19, 0),
             propietario1_id
