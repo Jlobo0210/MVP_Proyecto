@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil - BarberBook{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar con info del usuario -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if user.foto_perfil %}
+                        <img src="{{ user.foto_perfil }}" alt="{{ user.nombre }}" 
+                             class="rounded-circle mb-3" width="150" height="150">
+                    {% else %}
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" 
+                             style="width: 150px; height: 150px; font-size: 4rem;">
+                            {{ user.nombre[0] }}{{ user.apellido[0] }}
+                        </div>
+                    {% endif %}
+                    
+                    <h4>{{ user.nombre }} {{ user.apellido }}</h4>
+                    <p class="text-muted mb-3">{{ user.email }}</p>
+                    
+                    <span class="badge bg-primary mb-3">{{ user.rol_nombre }}</span>
+                    
+                    <p class="small text-muted mb-0">
+                        <i class="bi bi-calendar"></i> Miembro desde 
+                        {{ user.fecha_registro.strftime('%B %Y') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del perfil -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mb-4">
+                        <i class="bi bi-person-circle"></i> Información Personal
+                    </h3>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nombre</label>
+                            <p>{{ user.nombre }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Apellido</label>
+                            <p>{{ user.apellido }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Email</label>
+                            <p>{{ user.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Teléfono</label>
+                            <p>{{ user.telefono if user.telefono else 'No especificado' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Fecha de Registro</label>
+                            <p>{{ user.fecha_registro.strftime('%d/%m/%Y') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Último Acceso</label>
+                            <p>{{ user.ultimo_acceso.strftime('%d/%m/%Y %I:%M %p') if user.ultimo_acceso else 'Primer acceso' }}</p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button class="btn btn-outline-primary" disabled>
+                            <i class="bi bi-pencil"></i> Editar Perfil
+                        </button>
+                        <button class="btn btn-outline-secondary" disabled>
+                            <i class="bi bi-key"></i> Cambiar Contraseña
+                        </button>
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <i class="bi bi-info-circle"></i> 
+                        La funcionalidad de editar perfil estará disponible próximamente.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas (opcional) -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="mb-3">
+                        <i class="bi bi-graph-up"></i> Tus Estadísticas
+                    </h5>
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="p-3">
+                                <i class="bi bi-calendar-check display-4 text-primary"></i>
+                                <h3 class="mt-2">-</h3>
+                                <p class="text-muted mb-0">Citas Realizadas</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3">
+                                <i class="bi bi-clock-history display-4 text-success"></i>
+                                <h3 class="mt-2">-</h3>
+                                <p class="text-muted mb-0">Citas Pendientes</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3">
+                                <i class="bi bi-star-fill display-4 text-warning"></i>
+                                <h3 class="mt-2">-</h3>
+                                <p class="text-muted mb-0">Reseñas Dejadas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

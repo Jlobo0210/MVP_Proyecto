@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}{{ barberia.nombre }} - BarberBook{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header de la Barbería -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="bi bi-shop text-primary"></i> {{ barberia.nombre }}</h1>
+            <p class="lead text-muted">{{ barberia.descripcion }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if is_authenticated %}
+                <a href="{{ url_for('cliente.reservar', barberia_id=barberia.id) }}" class="btn btn-success btn-lg">
+                    <i class="bi bi-calendar-plus"></i> Reservar Cita
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-success btn-lg">
+                    <i class="bi bi-calendar-plus"></i> Reservar Cita
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Información de la Barbería -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5><i class="bi bi-geo-alt text-primary"></i> Ubicación</h5>
+                    <p class="mb-0">{{ barberia.direccion }}</p>
+                    <p class="text-muted">{{ barberia.ciudad }}</p>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5><i class="bi bi-telephone text-primary"></i> Contacto</h5>
+                    <p class="mb-1">{{ barberia.telefono }}</p>
+                    {% if barberia.email %}
+                        <p class="mb-0 small">{{ barberia.email }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5><i class="bi bi-clock text-primary"></i> Horario</h5>
+                    <p class="mb-0">{{ barberia.hora_apertura.strftime('%I:%M %p') }}</p>
+                    <p class="mb-0">{{ barberia.hora_cierre.strftime('%I:%M %p') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Servicios -->
+    <div class="mb-5">
+        <h2 class="mb-4">Nuestros Servicios</h2>
+        {% if servicios %}
+            <div class="row">
+                {% for servicio in servicios %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title">
+                                        <i class="bi bi-{{ servicio.icono }}"></i> {{ servicio.nombre }}
+                                    </h5>
+                                    <span class="badge bg-primary">${{ '{:,.0f}'.format(servicio.precio) }}</span>
+                                </div>
+                                <p class="card-text text-muted small">{{ servicio.descripcion }}</p>
+                                <p class="card-text">
+                                    <i class="bi bi-clock"></i> <small>{{ servicio.duracion_minutos }} min</small>
+                                </p>
+                                <span class="badge bg-secondary">{{ servicio.categoria }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No hay servicios disponibles en este momento.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Barberos -->
+    <div>
+        <h2 class="mb-4">Nuestro Equipo</h2>
+        {% if barberos %}
+            <div class="row">
+                {% for barbero in barberos %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        {% if barbero.foto_perfil %}
+                                            <img src="{{ barbero.foto_perfil }}" alt="{{ barbero.nombre }}" 
+                                                 class="rounded-circle" width="80" height="80">
+                                        {% else %}
+                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" 
+                                                 style="width: 80px; height: 80px; font-size: 2rem;">
+                                                {{ barbero.nombre[0] }}{{ barbero.apellido[0] }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col">
+                                        <h5 class="card-title mb-1">{{ barbero.nombre }} {{ barbero.apellido }}</h5>
+                                        {% if barbero.especialidad %}
+                                            <p class="card-text small text-muted mb-2">
+                                                <i class="bi bi-award"></i> {{ barbero.especialidad }}
+                                            </p>
+                                        {% endif %}
+                                        <p class="card-text mb-1">
+                                            <i class="bi bi-star-fill text-warning"></i> 
+                                            {{ '{:.1f}'.format(barbero.calificacion_promedio) }}
+                                            <small class="text-muted">({{ barbero.total_servicios }} servicios)</small>
+                                        </p>
+                                        {% if barbero.años_experiencia %}
+                                            <p class="card-text small">
+                                                <i class="bi bi-briefcase"></i> {{ barbero.años_experiencia }} años de experiencia
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No hay barberos disponibles en este momento.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- CTA Final -->
+    <div class="text-center mt-5 p-5 bg-light rounded">
+        <h3 class="mb-3">¿Listo para tu próximo corte?</h3>
+        <p class="lead mb-4">Reserva tu cita ahora y disfruta de nuestros servicios</p>
+        {% if is_authenticated %}
+            <a href="{{ url_for('cliente.reservar', barberia_id=barberia.id) }}" class="btn btn-success btn-lg">
+                <i class="bi bi-calendar-plus"></i> Reservar Ahora
+            </a>
+        {% else %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg me-2">
+                <i class="bi bi-person-plus"></i> Crear Cuenta
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">
+                <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

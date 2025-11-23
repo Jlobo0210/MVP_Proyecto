@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Reservar en {{ barberia.nombre }} - BarberBook{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Información de la Barbería (Sidebar) -->
+        <div class="col-md-4 mb-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ barberia.nombre }}</h5>
+                    <p class="card-text small text-muted mb-3">
+                        <i class="bi bi-geo-alt"></i> {{ barberia.direccion }}, {{ barberia.ciudad }}
+                    </p>
+                    <p class="card-text small mb-2">
+                        <i class="bi bi-clock"></i> 
+                        {{ barberia.hora_apertura.strftime('%I:%M %p') }} - {{ barberia.hora_cierre.strftime('%I:%M %p') }}
+                    </p>
+                    <p class="card-text small">
+                        <i class="bi bi-telephone"></i> {{ barberia.telefono }}
+                    </p>
+                    <hr>
+                    <div class="alert alert-info small mb-0">
+                        <i class="bi bi-info-circle"></i> 
+                        Selecciona el servicio, barbero, fecha y hora para completar tu reserva.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Reserva -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="mb-4">
+                        <i class="bi bi-calendar-plus text-primary"></i> Reservar Cita
+                    </h2>
+
+                    <form method="POST" action="{{ url_for('cliente.reservar', barberia_id=barberia.id) }}" id="formReserva">
+                        <!-- Seleccionar Servicio -->
+                        <div class="mb-4">
+                            <label for="servicio_id" class="form-label">
+                                <i class="bi bi-scissors"></i> Servicio *
+                            </label>
+                            <select class="form-select" id="servicio_id" name="servicio_id" required>
+                                <option value="">Selecciona un servicio</option>
+                                {% for servicio in servicios %}
+                                    <option value="{{ servicio.id }}" 
+                                            data-precio="{{ servicio.precio }}" 
+                                            data-duracion="{{ servicio.duracion_minutos }}">
+                                        {{ servicio.nombre }} - ${{ '{:,.0f}'.format(servicio.precio) }} 
+                                        ({{ servicio.duracion_minutos }} min)
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Seleccionar Barbero -->
+                        <div class="mb-4">
+                            <label for="barbero_id" class="form-label">
+                                <i class="bi bi-person"></i> Barbero *
+                            </label>
+                            <select class="form-select" id="barbero_id" name="barbero_id" required>
+                                <option value="">Selecciona un barbero</option>
+                                {% for barbero in barberos %}
+                                    <option value="{{ barbero.id }}">
+                                        {{ barbero.nombre }} {{ barbero.apellido }}
+                                        {% if barbero.especialidad %}- {{ barbero.especialidad }}{% endif %}
+                                        (⭐ {{ '{:.1f}'.format(barbero.calificacion_promedio) }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Seleccionar Fecha -->
+                        <div class="mb-4">
+                            <label for="fecha" class="form-label">
+                                <i class="bi bi-calendar"></i> Fecha *
+                            </label>
+                            <input type="date" class="form-control" id="fecha" name="fecha" required
+                                   min="{{ (now or '2024-01-01') }}">
+                        </div>
+
+                        <!-- Seleccionar Hora -->
+                        <div class="mb-4">
+                            <label for="hora" class="form-label">
+                                <i class="bi bi-clock"></i> Hora *
+                            </label>
+                            <select class="form-select" id="hora" name="hora" required disabled>
+                                <option value="">Primero selecciona barbero y fecha</option>
+                            </select>
+                            <div id="loading-horarios" class="d-none mt-2">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <span class="ms-2 small">Cargando horarios disponibles...</span>
+                            </div>
+                        </div>
+
+                        <!-- Notas (Opcional) -->
+                        <div class="mb-4">
+                            <label for="notas" class="form-label">
+                                <i class="bi bi-chat-left-text"></i> Notas o comentarios (opcional)
+                            </label>
+                            <textarea class="form-control" id="notas" name="notas" rows="3" 
+                                      placeholder="Ej: Prefiero corte bajo en los lados"></textarea>
+                        </div>
+
+                        <!-- Resumen de la Reserva -->
+                        <div id="resumen" class="alert alert-light d-none">
+                            <h6 class="mb-3">Resumen de tu reserva:</h6>
+                            <p class="mb-1"><strong>Servicio:</strong> <span id="resumen-servicio">-</span></p>
+                            <p class="mb-1"><strong>Precio:</strong> <span id="resumen-precio">-</span></p>
+                            <p class="mb-1"><strong>Barbero:</strong> <span id="resumen-barbero">-</span></p>
+                            <p class="mb-1"><strong>Fecha:</strong> <span id="resumen-fecha">-</span></p>
+                            <p class="mb-1"><strong>Hora:</strong> <span id="resumen-hora">-</span></p>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('main.ver_barberia', barberia_id=barberia.id) }}" 
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                            <button type="submit" class="btn btn-success" id="btnReservar" disabled>
+                                <i class="bi bi-check-circle"></i> Confirmar Reserva
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Elementos del DOM
+    const servicioSelect = document.getElementById('servicio_id');
+    const barberoSelect = document.getElementById('barbero_id');
+    const fechaInput = document.getElementById('fecha');
+    const horaSelect = document.getElementById('hora');
+    const loadingHorarios = document.getElementById('loading-horarios');
+    const btnReservar = document.getElementById('btnReservar');
+    const resumenDiv = document.getElementById('resumen');
+
+    // Establecer fecha mínima (hoy)
+    const hoy = new Date();
+    fechaInput.min = hoy.toISOString().split('T')[0];
+
+    // Actualizar resumen cuando cambian los campos
+    function actualizarResumen() {
+        const servicioOption = servicioSelect.options[servicioSelect.selectedIndex];
+        const barberoOption = barberoSelect.options[barberoSelect.selectedIndex];
+        
+        if (servicioSelect.value && barberoSelect.value && fechaInput.value && horaSelect.value) {
+            document.getElementById('resumen-servicio').textContent = servicioOption.text.split(' - ')[0];
+            document.getElementById('resumen-precio').textContent = '$' + servicioOption.dataset.precio;
+            document.getElementById('resumen-barbero').textContent = barberoOption.text.split(' (')[0];
+            document.getElementById('resumen-fecha').textContent = new Date(fechaInput.value + 'T00:00:00').toLocaleDateString('es-ES', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            document.getElementById('resumen-hora').textContent = horaSelect.options[horaSelect.selectedIndex].text;
+            
+            resumenDiv.classList.remove('d-none');
+            btnReservar.disabled = false;
+        } else {
+            resumenDiv.classList.add('d-none');
+            btnReservar.disabled = true;
+        }
+    }
+
+    // Cargar horarios disponibles
+    async function cargarHorariosDisponibles() {
+        const barberoId = barberoSelect.value;
+        const fecha = fechaInput.value;
+
+        if (!barberoId || !fecha) {
+            horaSelect.disabled = true;
+            horaSelect.innerHTML = '<option value="">Primero selecciona barbero y fecha</option>';
+            return;
+        }
+
+        // Mostrar loading
+        loadingHorarios.classList.remove('d-none');
+        horaSelect.disabled = true;
+        horaSelect.innerHTML = '<option value="">Cargando...</option>';
+
+        try {
+            const response = await fetch(`{{ url_for('cliente.horarios_disponibles') }}?barbero_id=${barberoId}&fecha=${fecha}`);
+            const data = await response.json();
+
+            if (data.disponibles && data.disponibles.length > 0) {
+                horaSelect.innerHTML = '<option value="">Selecciona una hora</option>';
+                data.disponibles.forEach(hora => {
+                    const option = document.createElement('option');
+                    option.value = hora;
+                    option.textContent = hora;
+                    horaSelect.appendChild(option);
+                });
+                horaSelect.disabled = false;
+            } else {
+                horaSelect.innerHTML = '<option value="">No hay horarios disponibles</option>';
+            }
+        } catch (error) {
+            console.error('Error cargando horarios:', error);
+            horaSelect.innerHTML = '<option value="">Error al cargar horarios</option>';
+        } finally {
+            loadingHorarios.classList.add('d-none');
+        }
+    }
+
+    // Event listeners
+    barberoSelect.addEventListener('change', () => {
+        cargarHorariosDisponibles();
+        actualizarResumen();
+    });
+
+    fechaInput.addEventListener('change', () => {
+        cargarHorariosDisponibles();
+        actualizarResumen();
+    });
+
+    servicioSelect.addEventListener('change', actualizarResumen);
+    horaSelect.addEventListener('change', actualizarResumen);
+</script>
+{% endblock %}
