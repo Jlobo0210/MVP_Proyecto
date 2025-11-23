@@ -1,8 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
+/* ============================================
+   VARIABLES CSS - Tema Barbería
+   ============================================ */
+
+/* --------------- INICIO PARTE BASES------------------ */
 :root {
-    --color-main: #1a202e; /* Definir los colores de la pagina */
+    /* Colores principales */
+    --color-main: #1a202e;
+    --primary-dark: #1a1a1a;
+    --primary-gold: #d4af37;
+    --primary-red: #c41e3a;
+    --accent-blue: #2c5f7e;
+    
+    /* Grises */
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    
+    /* Sombras */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    
+    /* Transiciones */
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* ============================================
+   RESET Y ESTILOS BASE
+   ============================================ */
 * {
     font-family: 'Poppins', sans-serif;
     box-sizing: border-box;
@@ -13,9 +47,665 @@
 }
 
 body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--gray-50);
+    color: var(--gray-800);
+    line-height: 1.6;
     overflow-x: hidden;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* ============================================
+   NAVBAR (Bootstrap Override)
+   ============================================ */
+.navbar {
+    background: var(--primary-dark) !important;
+    box-shadow: var(--shadow-lg);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 1.75rem;
+    letter-spacing: -0.5px;
+    transition: var(--transition);
+}
+
+.navbar-brand:hover {
+    transform: translateY(-2px);
+}
+
+.navbar-brand i {
+    color: var(--primary-gold);
+    font-size: 2rem;
+    margin-right: 0.5rem;
+    display: inline-block;
+    transition: var(--transition);
+}
+
+.navbar-brand:hover i {
+    transform: rotate(360deg);
+}
+
+.nav-link {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9) !important;
+    margin: 0 0.5rem;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--primary-gold) !important;
+    transform: translateY(-2px);
+}
+
+.navbar .btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold) 0%, #b8941f 100%);
+    border: none;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    transition: var(--transition);
+}
+
+.navbar .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+.dropdown-menu {
+    border: none;
+    box-shadow: var(--shadow-xl);
+    border-radius: 12px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.dropdown-item {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: var(--transition);
+}
+
+.dropdown-item:hover {
+    background-color: var(--gray-100);
+    transform: translateX(5px);
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+main {
+    flex: 1;
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.hero {
+    background: var(--primary-dark);
+    color: white;
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(196, 30, 58, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   CARDS (Bootstrap Override)
+   ============================================ */
+.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    height: 100%;
+    overflow: hidden;
+    background: white;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+}
+
+.card-body {
+    padding: 1.75rem;
+}
+
+.card-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 1rem;
+}
+
+.card-text {
+    color: var(--gray-600);
+}
+
+/* ============================================
+   BOTONES (Bootstrap Override)
+   ============================================ */
+.btn {
+    font-weight: 600;
+    padding: 0.75rem 1.75rem;
+    border-radius: 50px;
+    transition: var(--transition);
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1e4661 100%);
+    box-shadow: 0 4px 15px rgba(44, 95, 126, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(44, 95, 126, 0.5);
+    background: linear-gradient(135deg, #1e4661 0%, var(--accent-blue) 100%);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.5);
+}
+
+.btn-outline-danger {
+    border: 2px solid var(--primary-red);
+    color: var(--primary-red);
+}
+
+.btn-outline-danger:hover {
+    background: var(--primary-red);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   BADGES (Bootstrap Override)
+   ============================================ */
+.badge {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    letter-spacing: 0.5px;
+}
+
+.badge-estado {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+}
+
+/* ============================================
+   ALERTS (Bootstrap Override)
+   ============================================ */
+.alert {
+    border: none;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.alert i {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+    background: var(--primary-dark);
+    color: white;
+    padding: 2.5rem 0;
+    margin-top: auto;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.footer p {
+    margin-bottom: 0.5rem;
+}
+
+.footer .text-muted {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* ============================================
+   TABLA (Bootstrap Override)
+   ============================================ */
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.table thead {
+    background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-700) 100%);
+    color: white;
+}
+
+.table thead th {
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+    transition: var(--transition);
+}
+
+.table tbody tr:hover {
+    background-color: var(--gray-50);
+    transform: scale(1.01);
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* ============================================
+   ANIMACIONES
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* --------------- FINAL PARTE BASES------------------ */
+
+/* ============================================
+   INICIO PARTE INDEX
+   ============================================ */
+
+/* ============================================
+   VIDEO HERO SECTION
+   ============================================ */
+.video-hero {
+    position: relative;
+    height: 600px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Video de fondo */
+.video-hero-background {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    object-fit: cover;
+}
+
+/* Overlay oscuro sobre el video */
+.video-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(26, 26, 26, 0.85) 0%,
+        rgba(26, 26, 26, 0.7) 50%,
+        rgba(26, 26, 26, 0.85) 100%
+    );
+    z-index: 2;
+}
+
+/* Contenido sobre el video */
+.video-hero-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: white;
+    padding: 2rem;
+    animation: fadeInUp 1s ease-out;
+}
+
+.video-hero-content h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+    line-height: 1.2;
+}
+
+.video-hero-content p {
+    font-size: 1.4rem;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    font-weight: 300;
+}
+
+.video-hero-content .btn {
+    margin: 0.5rem;
+    font-size: 1.1rem;
+    padding: 1rem 2.5rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   FEATURES SECTION MEJORADA
+   ============================================ */
+.features-section {
+    background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+    padding: 5rem 0;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    background: white;
+    height: 100%;
+    border: 1px solid #e5e7eb;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    border-color: #d4af37;
+}
+
+.feature-icon {
+    font-size: 4rem;
+    background: linear-gradient(135deg, #2c5f7e 0%, #1e4661 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+
+.feature-card h4 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.feature-card p {
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+/* ============================================
+   BARBERÍAS SECTION
+   ============================================ */
+.barberias-section {
+    padding: 5rem 0;
+    background: white;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 3rem;
+    color: #1a1a1a;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #d4af37 0%, #b8941f 100%);
+    border-radius: 2px;
+}
+
+/* Cards de barberías mejoradas */
+.barberia-card {
+    height: 100%;
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+}
+
+.barberia-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.barberia-card .card-body {
+    padding: 2rem;
+}
+
+.barberia-card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.barberia-card-title i {
+    color: #d4af37;
+    margin-right: 0.75rem;
+    font-size: 1.75rem;
+}
+
+.barberia-info {
+    color: #4b5563;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.barberia-info i {
+    color: #2c5f7e;
+    margin-right: 0.5rem;
+    width: 20px;
+    flex-shrink: 0;
+}
+
+.barberia-description {
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 1.25rem 0;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+    border-left: 3px solid #d4af37;
+}
+
+.barberia-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.barberia-actions .btn {
+    flex: 1;
+    font-size: 0.95rem;
+    padding: 0.75rem 1.25rem;
+}
+
+/* ============================================
+   CTA SECTION
+   ============================================ */
+.cta-section {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    padding: 5rem 0;
+    margin-top: 5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(44, 95, 126, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+}
+
+.cta-content h3 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.cta-content p {
+    font-size: 1.3rem;
+    margin-bottom: 2.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+}
+
+.cta-content .btn {
+    font-size: 1.2rem;
+    padding: 1.25rem 3rem;
+    background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+    border: none;
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.cta-content .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(212, 175, 55, 0.6);
+}
+
+/* ============================================
+   RESPONSIVE INDEX
+   ============================================ */
+@media (max-width: 768px) {
+    .video-hero {
+        height: 500px;
+    }
+    
+    .video-hero-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .video-hero-content p {
+        font-size: 1.1rem;
+    }
+    
+    .video-hero-content .btn {
+        font-size: 1rem;
+        padding: 0.85rem 1.75rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+    }
+    
+    .cta-content h3 {
+        font-size: 2rem;
+    }
+    
+    .cta-content p {
+        font-size: 1.1rem;
+    }
+    
+    .barberia-actions {
+        flex-direction: column;
+    }
+}
+
+/* Animación de entrada */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   FINAL PARTE INDEX
+   ============================================ */
+
+/* ============================================
+   SIDEBAR (Sistema antiguo - mantener por compatibilidad)
+   ============================================ */
 #sidebar-toggle {
     display: none;
 }
@@ -36,10 +726,10 @@ body {
 #sidebar-toggle:checked ~ .main-content header {
     left: 0;
     right: 0;
-    width: 100%
+    width: 100%;
 }
 
-#sidebar-toggle:checked ~ .main-content{
+#sidebar-toggle:checked ~ .main-content {
     margin-left: 0;
 }
 
@@ -51,7 +741,7 @@ body {
     top: 0;
     padding: 1rem 1.5rem;
     background: linear-gradient(180deg, #1a202e 0%, #261c48 100%);
-    color: #fff; /* Color del texto en la barra */
+    color: #fff;
     z-index: 20;
     transition: left 300ms;
 }
@@ -67,13 +757,12 @@ body {
 }
 
 .sidebar-user {
-    margin: 0rem 0rem 1rem 0rem; /* Por donde está la img del logo, el del video puso 1rem 0rem 1rem 0rem */
+    margin: 0rem 0rem 1rem 0rem;
     text-align: center;
 }
 
 .sidebar-user img {
     width: 40%;
-    
 }
 
 .sidebar-user h3 {
@@ -100,11 +789,11 @@ body {
     margin-bottom: 1.3rem;
 }
 
-.sidebar-menu li{
+.sidebar-menu li {
     margin-bottom: 1rem;
 }
 
-.sidebar-menu li a{
+.sidebar-menu li a {
     color: #efefef;
     font-size: 0.9rem;
     display: flex;
@@ -119,6 +808,7 @@ body {
 
 .main-content {
     margin-left: 280px;
+    transition: margin-left 300ms;
 }
 
 header {
@@ -144,17 +834,11 @@ header {
     place-items: center;
     font-size: 1.5rem;
     border-radius: 50%;
-
 }
 
 .menu-toggle label:hover {
     background: #efefef;
     cursor: pointer;
-}
-
-.main-content {
-    margin-left: 280px;
-    transition: margin-left 300ms;
 }
 
 main {
@@ -167,9 +851,49 @@ main {
 .page-header {
     display: flex;
     justify-content: space-between;
-
 }
 
+/* ============================================
+   HOME PAGE (Dashboard)
+   ============================================ */
+.home-container {
+    background: #fff;
+    margin-top: 2rem;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 4px 4px 12px rgba(0,0,0,0.08);
+    animation: fadeInUp 0.6s ease-in-out;
+}
+
+.home-intro p {
+    color: #374151;
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 1.2rem;
+    text-align: justify;
+}
+
+.home-intro p:first-of-type {
+    margin-top: 1rem;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    color: #1e3a8a;
+    font-weight: 600;
+}
+
+.page-header small {
+    display: block;
+    color: #475569;
+    font-size: 1rem;
+    margin-top: 0.3rem;
+    font-weight: 500;
+}
+
+/* ============================================
+   RESPONSIVE - Sidebar
+   ============================================ */
 @media only screen and (max-width: 1124px) {
     .sidebar {
         left: -100%;
@@ -202,61 +926,26 @@ main {
     .cards {
         grid-template-columns: 100%;
     }
+    
     .page-header {
         display: block;
     }
+    
     .header-actions {
         margin-top: 1rem;
         text-align: right;
     }
-}
-
-/* Estilos de PAGINA PRINCIPAL */
-
-/* === HOME PAGE === */
-.home-container {
-  background: #fff;
-  margin-top: 2rem;
-  padding: 2rem 2.5rem;
-  border-radius: 12px;
-  box-shadow: 4px 4px 12px rgba(0,0,0,0.08);
-  animation: fadeInUp 0.6s ease-in-out;
-}
-
-.home-intro p {
-  color: #374151;
-  font-size: 1rem;
-  line-height: 1.8;
-  margin-bottom: 1.2rem;
-  text-align: justify;
-}
-
-.home-intro p:first-of-type {
-  margin-top: 1rem;
-}
-
-.page-header h1 {
-  font-size: 2rem;
-  color: #1e3a8a;
-  font-weight: 600;
-}
-
-.page-header small {
-  display: block;
-  color: #475569;
-  font-size: 1rem;
-  margin-top: 0.3rem;
-  font-weight: 500;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    
+    .hero {
+        padding: 3rem 0;
+    }
+    
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
 }
 
