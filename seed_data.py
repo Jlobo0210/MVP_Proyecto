@@ -6,37 +6,72 @@ from datetime import time
 def get_connection():
     return pyodbc.connect(Config.DB_CONNECTION_STRING)
 
-def seed_database():
+def limpiar_y_resetear_database():
+    """Borra todos los datos y resetea los contadores IDENTITY"""
     conn = get_connection()
     cursor = conn.cursor()
     
     try:
-        print("🌱 Iniciando seed de datos...")
+        print("🗑️  Limpiando base de datos...")
         
-        # === 1. VERIFICAR SI YA HAY DATOS ===
-        cursor.execute("SELECT COUNT(*) FROM Usuarios")
-        if cursor.fetchone()[0] > 0:
-            print("⚠️  Ya hay datos en la base de datos.")
-            respuesta = input("¿Deseas borrar todo y empezar de nuevo? (s/n): ")
-            if respuesta.lower() != 's':
-                print("❌ Operación cancelada.")
-                return
-            
-            # Borrar datos existentes (en orden por foreign keys)
-            print("🗑️  Borrando datos existentes...")
-            cursor.execute("DELETE FROM Notificaciones")
-            cursor.execute("DELETE FROM Pagos")
-            cursor.execute("DELETE FROM Resenas")
-            cursor.execute("DELETE FROM Citas")
-            cursor.execute("DELETE FROM Horarios_Barberos")
-            cursor.execute("DELETE FROM Servicios")
-            cursor.execute("DELETE FROM Barberos")
-            cursor.execute("DELETE FROM Barberias")
-            cursor.execute("DELETE FROM Usuarios")
-            conn.commit()
-            print("✓ Datos borrados")
+        # Borrar datos en orden (respetando foreign keys)
+        tablas = [
+            'Notificaciones',
+            'Pagos', 
+            'Resenas',
+            'Citas',
+            'Horarios_Barberos',
+            'Servicios',
+            'Barberos',
+            'Barberias',
+            'Usuarios'
+        ]
         
-        # === 2. OBTENER IDs DE ROLES Y CATEGORÍAS (ya insertados por el schema) ===
+        for tabla in tablas:
+            cursor.execute(f"DELETE FROM {tabla}")
+            print(f"  ✓ {tabla} limpiada")
+        
+        conn.commit()
+        
+        # Resetear contadores IDENTITY
+        print("\n🔄 Reseteando contadores de IDs...")
+        
+        for tabla in tablas:
+            cursor.execute(f"DBCC CHECKIDENT ('{tabla}', RESEED, 0)")
+            print(f"  ✓ {tabla} reseteada")
+        
+        conn.commit()
+        print("\n✅ Base de datos limpia y lista para datos nuevos\n")
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"\n❌ Error al limpiar: {e}")
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def seed_database():
+    """Llena la base de datos con datos de prueba"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        print("=" * 60)
+        print("🌱 INICIANDO SEED DE BASE DE DATOS")
+        print("=" * 60)
+        
+        # === LIMPIAR Y RESETEAR PRIMERO ===
+        limpiar_y_resetear_database()
+        
+        # Reconectar después del reset
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        # === OBTENER IDs DE ROLES Y CATEGORÍAS ===
+        print("📋 Obteniendo roles y categorías del sistema...")
+        
         cursor.execute("SELECT id FROM Roles WHERE nombre = 'Admin'")
         admin_rol_id = cursor.fetchone()[0]
         
@@ -49,7 +84,6 @@ def seed_database():
         cursor.execute("SELECT id FROM Roles WHERE nombre = 'Cliente'")
         cliente_rol_id = cursor.fetchone()[0]
         
-        # Obtener IDs de categorías de servicios
         cursor.execute("SELECT id FROM Categorias_Servicios WHERE nombre = 'Cortes'")
         cat_cortes_id = cursor.fetchone()[0]
         
@@ -59,40 +93,38 @@ def seed_database():
         cursor.execute("SELECT id FROM Categorias_Servicios WHERE nombre = 'Paquetes'")
         cat_paquetes_id = cursor.fetchone()[0]
         
-        print("✓ Roles y categorías obtenidos")
+        print("  ✓ Roles y categorías obtenidos\n")
         
-        # === 3. CREAR USUARIOS ===
-        print("\n👥 Creando usuarios...")
+        # === CREAR USUARIOS ===
+        print("👥 Creando usuarios...")
         
-        # Contraseña por defecto para todos: "password123"
         password_hash = generate_password_hash("password123")
         
-        # Usuario Admin
+        # Admin
         cursor.execute("""
             INSERT INTO Usuarios (email, password_hash, nombre, apellido, telefono, rol_id)
             VALUES (?, ?, ?, ?, ?, ?)
         """, ('admin@barberia.com', password_hash, 'Admin', 'Sistema', '3001234567', admin_rol_id))
         cursor.execute("SELECT @@IDENTITY")
         admin_id = cursor.fetchone()[0]
-        print(f"  ✓ Admin creado: admin@barberia.com / password123")
+        print(f"  ✓ Admin creado (ID: {admin_id})")
         
-        # Propietario 1
+        # Propietarios
         cursor.execute("""
             INSERT INTO Usuarios (email, password_hash, nombre, apellido, telefono, rol_id)
             VALUES (?, ?, ?, ?, ?, ?)
         """, ('carlos.mendez@gmail.com', password_hash, 'Carlos', 'Méndez', '3009876543', propietario_rol_id))
         cursor.execute("SELECT @@IDENTITY")
         propietario1_id = cursor.fetchone()[0]
-        print(f"  ✓ Propietario 1: carlos.mendez@gmail.com / password123")
+        print(f"  ✓ Propietario 1 creado (ID: {propietario1_id})")
         
-        # Propietario 2
         cursor.execute("""
             INSERT INTO Usuarios (email, password_hash, nombre, apellido, telefono, rol_id)
             VALUES (?, ?, ?, ?, ?, ?)
         """, ('maria.lopez@gmail.com', password_hash, 'María', 'López', '3015556789', propietario_rol_id))
         cursor.execute("SELECT @@IDENTITY")
         propietario2_id = cursor.fetchone()[0]
-        print(f"  ✓ Propietario 2: maria.lopez@gmail.com / password123")
+        print(f"  ✓ Propietario 2 creado (ID: {propietario2_id})")
         
         # Barberos
         barberos_data = [
@@ -109,8 +141,9 @@ def seed_database():
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (email, password_hash, nombre, apellido, telefono, barbero_rol_id))
             cursor.execute("SELECT @@IDENTITY")
-            barberos_ids.append(cursor.fetchone()[0])
-            print(f"  ✓ Barbero: {email} / password123")
+            user_id = cursor.fetchone()[0]
+            barberos_ids.append(user_id)
+            print(f"  ✓ Barbero: {nombre} (ID: {user_id})")
         
         # Clientes
         clientes_data = [
@@ -129,12 +162,12 @@ def seed_database():
             """, (email, password_hash, nombre, apellido, telefono, cliente_rol_id))
             cursor.execute("SELECT @@IDENTITY")
             clientes_ids.append(cursor.fetchone()[0])
-        print(f"  ✓ {len(clientes_ids)} clientes creados")
         
+        print(f"  ✓ {len(clientes_ids)} clientes creados\n")
         conn.commit()
         
-        # === 4. CREAR BARBERÍAS ===
-        print("\n💈 Creando barberías...")
+        # === CREAR BARBERÍAS ===
+        print("💈 Creando barberías...")
         
         cursor.execute("""
             INSERT INTO Barberias (nombre, direccion, ciudad, telefono, email, descripcion, 
@@ -146,14 +179,14 @@ def seed_database():
             'Bogotá',
             '6011234567',
             'contacto@elclasico.com',
-            'Barbería tradicional con un ambiente acogedor y profesional, reconocida por su dedicación al detalle y más de dos décadas ofreciendo cortes clásicos y modernos para cada cliente.',
+            'Barbería tradicional con más de 20 años de experiencia. Especialistas en cortes clásicos y modernos.',
             time(9, 0),
             time(19, 0),
             propietario1_id
         ))
         cursor.execute("SELECT @@IDENTITY")
         barberia1_id = cursor.fetchone()[0]
-        print("  ✓ BarberShop El Clásico")
+        print(f"  ✓ BarberShop El Clásico (ID: {barberia1_id})")
         
         cursor.execute("""
             INSERT INTO Barberias (nombre, direccion, ciudad, telefono, email, descripcion, 
@@ -165,21 +198,20 @@ def seed_database():
             'Bogotá',
             '6017654321',
             'info@moderncuts.com',
-            'Estudio de barbería moderna, especializado en cortes de tendencia, diseños personalizados y color profesional para quienes buscan un estilo fresco y distintivo.',
+            'Estudio de barbería moderna. Cortes de tendencia, diseños y color.',
             time(10, 0),
             time(20, 0),
             propietario2_id
         ))
         cursor.execute("SELECT @@IDENTITY")
         barberia2_id = cursor.fetchone()[0]
-        print("  ✓ Modern Cuts Studio")
+        print(f"  ✓ Modern Cuts Studio (ID: {barberia2_id})\n")
         
         conn.commit()
         
-        # === 5. CREAR BARBEROS EN BARBERÍAS ===
-        print("\n✂️  Asignando barberos a barberías...")
+        # === CREAR BARBEROS EN BARBERÍAS ===
+        print("✂️  Asignando barberos a barberías...")
         
-        # Barberos para Barbería 1
         cursor.execute("""
             INSERT INTO Barberos (usuario_id, barberia_id, especialidad, años_experiencia, 
                                  comision_porcentaje, calificacion_promedio)
@@ -187,6 +219,7 @@ def seed_database():
         """, (barberos_ids[0], barberia1_id, 'Cortes clásicos y barba', 8, 40.00, 4.8))
         cursor.execute("SELECT @@IDENTITY")
         barbero1_id = cursor.fetchone()[0]
+        print(f"  ✓ Juan Pérez → BarberShop El Clásico (Barbero ID: {barbero1_id})")
         
         cursor.execute("""
             INSERT INTO Barberos (usuario_id, barberia_id, especialidad, años_experiencia, 
@@ -195,8 +228,8 @@ def seed_database():
         """, (barberos_ids[1], barberia1_id, 'Fade y diseños', 5, 35.00, 4.5))
         cursor.execute("SELECT @@IDENTITY")
         barbero2_id = cursor.fetchone()[0]
+        print(f"  ✓ Pedro Gómez → BarberShop El Clásico (Barbero ID: {barbero2_id})")
         
-        # Barberos para Barbería 2
         cursor.execute("""
             INSERT INTO Barberos (usuario_id, barberia_id, especialidad, años_experiencia, 
                                  comision_porcentaje, calificacion_promedio)
@@ -204,6 +237,7 @@ def seed_database():
         """, (barberos_ids[2], barberia2_id, 'Cortes modernos y color', 6, 45.00, 4.9))
         cursor.execute("SELECT @@IDENTITY")
         barbero3_id = cursor.fetchone()[0]
+        print(f"  ✓ Luis Rodríguez → Modern Cuts Studio (Barbero ID: {barbero3_id})")
         
         cursor.execute("""
             INSERT INTO Barberos (usuario_id, barberia_id, especialidad, años_experiencia, 
@@ -212,12 +246,12 @@ def seed_database():
         """, (barberos_ids[3], barberia2_id, 'Estilos de tendencia', 4, 40.00, 4.7))
         cursor.execute("SELECT @@IDENTITY")
         barbero4_id = cursor.fetchone()[0]
+        print(f"  ✓ Andrés Martínez → Modern Cuts Studio (Barbero ID: {barbero4_id})\n")
         
-        print("  ✓ 4 barberos asignados")
         conn.commit()
         
-        # === 6. CREAR SERVICIOS ===
-        print("\n💇 Creando servicios...")
+        # === CREAR SERVICIOS ===
+        print("💇 Creando servicios...")
         
         servicios_barberia1 = [
             ('Corte Clásico', 'Corte tradicional con tijera y máquina', 25000, 30, cat_cortes_id),
@@ -235,6 +269,8 @@ def seed_database():
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (barberia1_id, categoria, nombre, desc, precio, duracion))
         
+        print(f"  ✓ {len(servicios_barberia1)} servicios para BarberShop El Clásico")
+        
         servicios_barberia2 = [
             ('Corte Premium', 'Corte personalizado con técnicas modernas', 40000, 45, cat_cortes_id),
             ('Diseño Artístico', 'Diseños creativos y personalizados', 35000, 40, cat_cortes_id),
@@ -250,17 +286,16 @@ def seed_database():
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (barberia2_id, categoria, nombre, desc, precio, duracion))
         
-        print(f"  ✓ {len(servicios_barberia1) + len(servicios_barberia2)} servicios creados")
+        print(f"  ✓ {len(servicios_barberia2)} servicios para Modern Cuts Studio\n")
         conn.commit()
         
-        # === 7. CREAR HORARIOS DE BARBEROS ===
-        print("\n📅 Creando horarios de barberos...")
+        # === CREAR HORARIOS DE BARBEROS ===
+        print("📅 Creando horarios de barberos...")
         
-        # Horarios para todos los barberos (Lunes a Sábado: 9am-6pm)
         barberos_registrados = [barbero1_id, barbero2_id, barbero3_id, barbero4_id]
         
         for barbero_id in barberos_registrados:
-            # Lunes a Viernes (días 2-6 en SQL Server DATEPART)
+            # Lunes a Viernes (días 2-6)
             for dia in range(2, 7):
                 cursor.execute("""
                     INSERT INTO Horarios_Barberos (barbero_id, dia_semana, hora_inicio, hora_fin)
@@ -273,30 +308,41 @@ def seed_database():
                 VALUES (?, ?, ?, ?)
             """, (barbero_id, 7, time(10, 0), time(16, 0)))
         
-        print("  ✓ Horarios creados para todos los barberos")
+        print(f"  ✓ Horarios creados para {len(barberos_registrados)} barberos\n")
         conn.commit()
         
-        print("\n✅ ¡SEED COMPLETADO EXITOSAMENTE!")
-        print("\n" + "="*50)
-        print("CREDENCIALES DE PRUEBA:")
-        print("="*50)
-        print("\n👨‍💼 Admin:")
-        print("   Email: admin@barberia.com")
-        print("   Password: password123")
-        print("\n🏪 Propietarios:")
-        print("   Email: carlos.mendez@gmail.com")
-        print("   Email: maria.lopez@gmail.com")
-        print("   Password: password123")
-        print("\n✂️  Barberos:")
-        print("   Email: juan.perez@gmail.com")
-        print("   Email: pedro.gomez@gmail.com")
-        print("   Email: luis.rodriguez@gmail.com")
-        print("   Email: andres.martinez@gmail.com")
-        print("   Password: password123")
-        print("\n👤 Clientes:")
-        print("   Email: cliente1@gmail.com hasta cliente5@gmail.com")
-        print("   Password: password123")
-        print("="*50)
+        # === RESUMEN ===
+        print("=" * 60)
+        print("✅ ¡SEED COMPLETADO EXITOSAMENTE!")
+        print("=" * 60)
+        print("\n📊 RESUMEN:")
+        print(f"   • Barbería 1 (ID: {barberia1_id}): BarberShop El Clásico")
+        print(f"   • Barbería 2 (ID: {barberia2_id}): Modern Cuts Studio")
+        print(f"   • Total usuarios: {len(barberos_ids) + len(clientes_ids) + 3}")
+        print(f"   • Total servicios: {len(servicios_barberia1) + len(servicios_barberia2)}")
+        print("\n" + "=" * 60)
+        print("🔑 CREDENCIALES DE PRUEBA:")
+        print("=" * 60)
+        print("\n👨‍💼 ADMIN:")
+        print("   📧 Email: admin@barberia.com")
+        print("   🔒 Password: password123")
+        print("\n🏪 PROPIETARIOS:")
+        print("   📧 carlos.mendez@gmail.com")
+        print("   📧 maria.lopez@gmail.com")
+        print("   🔒 Password: password123")
+        print("\n✂️  BARBEROS:")
+        print("   📧 juan.perez@gmail.com")
+        print("   📧 pedro.gomez@gmail.com")
+        print("   📧 luis.rodriguez@gmail.com")
+        print("   📧 andres.martinez@gmail.com")
+        print("   🔒 Password: password123")
+        print("\n👤 CLIENTES:")
+        print("   📧 cliente1@gmail.com a cliente5@gmail.com")
+        print("   🔒 Password: password123")
+        print("\n" + "=" * 60)
+        print("⚠️  IMPORTANTE: Todos los IDs han sido reseteados.")
+        print("    Todas las máquinas tendrán los mismos IDs.")
+        print("=" * 60 + "\n")
         
     except Exception as e:
         conn.rollback()
@@ -308,39 +354,17 @@ def seed_database():
         cursor.close()
         conn.close()
 
-def reiniciar_database():
-    conn = get_connection()
-    cursor = conn.cursor()
-    
-    try:
-        print("🗑️  Borrando todos los datos de la base de datos...")
-        
-        cursor.execute("DELETE FROM Notificaciones")
-        cursor.execute("DELETE FROM Pagos")
-        cursor.execute("DELETE FROM Resenas")
-        cursor.execute("DELETE FROM Citas")
-        cursor.execute("DELETE FROM Horarios_Barberos")
-        cursor.execute("DELETE FROM Servicios")
-        cursor.execute("DELETE FROM Barberos")
-        cursor.execute("DELETE FROM Barberias")
-        cursor.execute("DELETE FROM Usuarios")
-        
-        conn.commit()
-        print("✓ Base de datos reiniciada exitosamente.")
-        
-    except Exception as e:
-        conn.rollback()
-        print(f"\n❌ Error al reiniciar la base de datos: {e}")
-        import traceback
-        traceback.print_exc()
-    
-    finally:
-        cursor.close()
-        conn.close()
 
 if __name__ == '__main__':
-    respuesta = input("Llenar la base de datos con datos de prueba o borrar la seed: 1/2 ")
-    if respuesta == '1':
+    print("\n" + "=" * 60)
+    print("  SISTEMA DE SEED - BARBERBOOK")
+    print("=" * 60)
+    print("\nEste script limpiará TODA la base de datos y creará")
+    print("datos de prueba desde cero con IDs consistentes.\n")
+    
+    respuesta = input("¿Deseas continuar? (s/n): ")
+    
+    if respuesta.lower() == 's':
         seed_database()
-    elif respuesta == '2':
-        reiniciar_database()
+    else:
+        print("\n❌ Operación cancelada.\n")
