@@ -1080,3 +1080,35 @@ main {
         padding: 2rem;
     }
 }
+
+.badge-estado.badge-pendiente {
+    background-color: #ffeeba;   /* amarillo claro */
+    color: #856404;              /* texto café oscuro */
+    font-weight: 600;
+}
+
+.badge-estado.badge-confirmada {
+    background-color: #cce5ff;   /* azul claro */
+    color: #004085;              /* azul oscuro */
+    font-weight: 600;
+}
+
+.badge-estado.badge-completada {
+    background-color: #d4edda;   /* verde claro */
+    color: #155724;              /* verde oscuro */
+    font-weight: 600;
+}
+
+
+.badge-estado.badge-cancelada {
+    background-color: #f8d7da;   /* rojo claro */
+    color: #721c24;              /* rojo oscuro */
+    font-weight: 600;
+}
+
+
+.badge-estado.badge-noshow {
+    background-color: #e2e3e5;   /* gris claro */
+    color: #383d41;              /* gris oscuro */
+    font-weight: 600;
+}
