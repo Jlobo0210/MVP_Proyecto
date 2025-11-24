@@ -50,8 +50,8 @@ def ver_barberia(barberia_id):
         barberia=barberia,
         servicios=servicios,
         barberos=barberos,
-        images=images,          # ← DEBE ESTAR AQUÍ
-        total_images=total_images  # ← Y AQUÍ
+        images=images,          
+        total_images=total_images  
     )
 
 
