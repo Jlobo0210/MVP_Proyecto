@@ -275,6 +275,7 @@ main {
     font-size: 0.85rem;
     padding: 0.5rem 1rem;
     border-radius: 50px;
+    color: var(--primary-dark) !important;
 }
 
 /* ============================================
@@ -1092,7 +1093,7 @@ main {
 }
 
 /* ============================================
-    ESTILOS DE VER_CITA 
+    ESTILOS DE VER_CITA BARBERO
     ============================================ */
 .vercita-wrapper {
     min-height: 80vh;   /* evita que el footer suba */
