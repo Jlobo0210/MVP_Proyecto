@@ -3,7 +3,7 @@
 {% block title %}Detalle de Cita - BarberBook{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container my-5 vercita-wrapper">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <!-- Header -->
@@ -16,7 +16,7 @@
 
             <!-- Información de la Cita -->
             <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header card-header-accent text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bi bi-scissors"></i> {{ cita.servicio_nombre }}
@@ -100,7 +100,7 @@
             <!-- Cambiar Estado -->
             {% if cita.estado_nombre in ['Pendiente', 'Confirmada'] %}
             <div class="card">
-                <div class="card-header">
+                <div class="card-header card-header-accent text-white">
                     <h5 class="mb-0">
                         <i class="bi bi-arrow-repeat"></i> Cambiar Estado de la Cita
                     </h5>

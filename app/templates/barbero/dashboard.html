@@ -7,12 +7,12 @@
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1><i class="bi bi-scissors text-primary"></i> Mi Dashboard</h1>
+            <h1><i class="bi bi-scissors icon-gold"></i> Resumen</h1>
             <p class="lead">{{ barbero.barberia_nombre }}</p>
             <p class="text-muted">{{ fecha_hoy.strftime('%A, %d de %B de %Y') }}</p>
         </div>
         <div class="col-md-4 text-end">
-            <a href="{{ url_for('barbero.agenda') }}" class="btn btn-outline-primary">
+            <a href="{{ url_for('barbero.agenda') }}" class="btn btn-primary">
                 <i class="bi bi-calendar3"></i> Ver Agenda Completa
             </a>
         </div>
@@ -21,7 +21,7 @@
     <!-- Estadísticas Rápidas -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
-            <div class="card bg-primary text-white">
+            <div class="card text-white" style="background-color: var(--accent-blue);">
                 <div class="card-body text-center">
                     <i class="bi bi-calendar-check display-4"></i>
                     <h3 class="mt-2">{{ estadisticas.completadas or 0 }}</h3>
@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card bg-success text-white">
+            <div class="card text-white" style="background-color: #059669;">
                 <div class="card-body text-center">
                     <i class="bi bi-star-fill display-4"></i>
                     <h3 class="mt-2">{{ '{:.1f}'.format(barbero.calificacion_promedio) }}</h3>
@@ -39,7 +39,7 @@
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card bg-warning text-white">
+            <div class="card text-white" style="background-color: var(--primary-gold);">
                 <div class="card-body text-center">
                     <i class="bi bi-clock-history display-4"></i>
                     <h3 class="mt-2">{{ citas_pendientes|length + citas_confirmadas|length }}</h3>
@@ -48,7 +48,7 @@
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card bg-info text-white">
+            <div class="card text-white" style="background-color: var(--gray-600);">
                 <div class="card-body text-center">
                     <i class="bi bi-cash display-4"></i>
                     <h3 class="mt-2">${{ '{:,.0f}'.format(estadisticas.ingreso_promedio) }}</h3>
@@ -174,7 +174,7 @@
                         <td>
                             <a href="{{ url_for('barbero.ver_cita', cita_id=cita.id) }}" 
                                class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye"></i>
+                                <i class="bi bi-eye icono-ojo"></i>
                             </a>
                         </td>
                     </tr>
@@ -183,7 +183,7 @@
             </table>
         </div>
         <div class="text-end">
-            <a href="{{ url_for('barbero.agenda') }}" class="btn btn-link">
+            <a href="{{ url_for('barbero.agenda') }}" class="btn btn-link-accent">
                 Ver todas las citas <i class="bi bi-arrow-right"></i>
             </a>
         </div>

@@ -249,13 +249,24 @@ main {
     transform: translateY(-2px);
 }
 
+.btn-link-accent {
+    color: var(--accent-blue) !important;
+    text-decoration: none !important;
+    font-weight: 500;
+}
+
+.btn-link-accent:hover {
+    color: var(--gray-800) !important;
+    text-decoration: underline !important;
+}
+
 /* ============================================
     BADGES MEJORADOS
     ============================================ */
 .badge {
     font-size: 0.85rem;
     font-weight: 600;
-    padding: 0.5rem 1rem;
+    padding: 0.5rbtnm 1rem;
     border-radius: 50px;
     letter-spacing: 0.5px;
 }
@@ -634,6 +645,103 @@ main {
 }
 
 /* ============================================
+    ESTILOS DE PERFIL (perfil.html)
+    ============================================ */
+
+.perfil-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+}
+
+.perfil-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.perfil-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: var(--shadow-md);
+    border: 4px solid var(--gray-100);
+}
+
+.perfil-avatar-placeholder {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1e4661 100%);
+    color: white;
+    box-shadow: var(--shadow-md);
+    border: 4px solid var(--gray-100);
+}
+
+.perfil-nombre {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 0.5rem;
+}
+
+.perfil-label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.perfil-value {
+    color: var(--gray-800);
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.perfil-wrapper {
+    min-height: 80vh; 
+}
+
+.perfil-card {
+    height: auto !important;
+}   
+
+/* Estadísticas en sidebar */
+.estadistica-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0;
+}
+
+.estadistica-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.estadistica-info {
+    flex: 1;
+}
+
+.estadistica-numero {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 0.25rem;
+}
+
+.estadistica-label {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    margin-bottom: 0;
+}
+
+/* ============================================
     ESTILOS DE BARBERIA
     ============================================ */
 
@@ -963,6 +1071,10 @@ main {
     box-shadow: var(--shadow-md);
 }
 
+.icono-ojo {
+    font-size: 1.28rem; /* ligeramente más grande */
+}
+
 /* ============================================
    CTA FINAL
    ============================================ */
@@ -979,6 +1091,25 @@ main {
     font-size: 2rem;
 }
 
+/* ============================================
+    ESTILOS DE VER_CITA 
+    ============================================ */
+.vercita-wrapper {
+    min-height: 80vh;   /* evita que el footer suba */
+}
+
+.card {
+    height: auto !important;
+    max-height: none !important;
+}
+
+.card-header-accent {
+    background-color: var(--accent-blue) !important;   
+}
+
+.icon-gold {
+    color: var(--primary-gold) !important;
+}
 
 /* ============================================
     RESPONSIVE
@@ -1079,36 +1210,4 @@ main {
     .cta-final {
         padding: 2rem;
     }
-}
-
-.badge-estado.badge-pendiente {
-    background-color: #ffeeba;   /* amarillo claro */
-    color: #856404;              /* texto café oscuro */
-    font-weight: 600;
-}
-
-.badge-estado.badge-confirmada {
-    background-color: #cce5ff;   /* azul claro */
-    color: #004085;              /* azul oscuro */
-    font-weight: 600;
-}
-
-.badge-estado.badge-completada {
-    background-color: #d4edda;   /* verde claro */
-    color: #155724;              /* verde oscuro */
-    font-weight: 600;
-}
-
-
-.badge-estado.badge-cancelada {
-    background-color: #f8d7da;   /* rojo claro */
-    color: #721c24;              /* rojo oscuro */
-    font-weight: 600;
-}
-
-
-.badge-estado.badge-noshow {
-    background-color: #e2e3e5;   /* gris claro */
-    color: #383d41;              /* gris oscuro */
-    font-weight: 600;
 }
